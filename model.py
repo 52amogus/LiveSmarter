@@ -6,7 +6,7 @@ import json
 from string import ascii_letters,digits
 from secrets import choice
 
-CURRENT_FORMAT_VERSION = "1.1"
+CURRENT_FORMAT_VERSION = "1.2"
 
 def format_1_0(data:dict) -> dict:
     data["isImportant"] = False
@@ -30,22 +30,28 @@ def UUID() -> str:
     return result
 
 class Event:
-    def __init__(self,name:str,time:dtime,isImportant:bool):
+    def __init__(self,name:str,time:dtime,isImportant:bool,uuid:str,completed:bool=False):
         self.name = name
         self.time = time
         self.isImportant = isImportant
+        self.completed = completed
         self.version = CURRENT_FORMAT_VERSION
-
+        self.id = uuid
 
     def __hash__(self):
         return self.name,self.time.isoformat(),self.isImportant
 
     @classmethod
-    def decode(cls,data:dict[str,Any]) -> Self:
+    def decode(cls,data:dict[str,Any],uuid:str) -> Self:
         event_version = data["version"]
         if event_version == CURRENT_FORMAT_VERSION:
             try:
-                result = cls(data["name"],dtime.fromisoformat(data["time"]),data["isImportant"])
+                result = cls(data["name"],
+                             dtime.fromisoformat(data["time"]),
+                             data["isImportant"],
+                             uuid,
+                             data["completed"]
+                             )
                 print(result.__dict__)
                 return result
             except KeyError as e:
@@ -57,7 +63,11 @@ class Event:
                 raise EventDecoderError(f"\nCannot decode event of version {event_version}!")
 
     def save(self) -> dict:
-        return {"name":self.name,"time":self.time.isoformat(),"version":self.version,"isImportant":self.isImportant}
+        return {"name":self.name,
+                "time":self.time.isoformat(),
+                "version":self.version,"isImportant":self.isImportant,
+                "completed":self.completed,
+                }
 
 app_path = f"{environ.get("HOME")}/Library/Application Support/live-smarter"
 
@@ -97,7 +107,7 @@ def load_all(date:ddate) -> list[Event]:
         try:
             with open(path.join(dir_path,load_dir_path,name)) as file:
                 all_items.append(
-                    Event.decode(json.load(file))
+                    Event.decode(json.load(file),name)
                 )
         except FileNotFoundError as e:
             print(f"Nothing planned, {e}")
@@ -111,7 +121,7 @@ def save_item(date:ddate,item:Event):
         mkdir(p2)
     if not path.exists(p3:=path.join(dir_path,p1,p2,str(date.day))):
         mkdir(p3)
-    with open(path.join(p3,UUID()),"w") as file:
+    with open(path.join(p3,item.id),"w") as file:
         json.dump(item.save(),file)
 
 
