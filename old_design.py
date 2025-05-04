@@ -46,7 +46,7 @@ if __name__ == "__main__":
     buttons.addWidget(btn_add)
     buttons.addWidget(btn_next)
 
-    event_list = EventList([])
+    event_list = EventList([],date.today())
 
     #Adding widgets to the sidebar
     side_layout.addWidget(text_day)
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     def open_day():
         event_list.reset_data(
-            model.load_all(date(selected_year,selected_month,int(list_days.currentItem().text().split(",")[0])))
+            model.load_all(selected_date:=date(selected_year,selected_month,int(list_days.currentItem().text().split(",")[0]))),selected_date
         )
 
     def next_day():
