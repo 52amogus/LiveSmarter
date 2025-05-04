@@ -3,6 +3,7 @@ from typing import NamedTuple
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (QListWidget,
                                QHeaderView,
+                                QCheckBox,
                                QHBoxLayout,
                                QVBoxLayout,
                                QLabel,
@@ -39,16 +40,27 @@ class EventRow(QFrame):
     def __init__(self,item:Event):
         super().__init__()
         print(item.name)
-        main_lay = QVBoxLayout()
-        main_lay.setSpacing(0)
+        main_lay = QHBoxLayout()
+        lay = QVBoxLayout()
+        lay.setSpacing(0)
+
         name_label = QLabel(item.name)
-        main_lay.addWidget(name_label)
+        lay.addWidget(name_label)
+
         time_label = QLabel(
             f"{item.time.hour} : {item.time.minute if item.time.minute > 9 else f"0{item.time.minute}"}"
         )
         name_label.setObjectName("subtitle")
         time_label.setObjectName("subtitle")
-        main_lay.addWidget(time_label)
+
+        lay.addWidget(time_label)
+
+        isChecked = QCheckBox()
+        isChecked.setFixedSize(50,50)
+
+        main_lay.addWidget(isChecked)
+        main_lay.addLayout(lay)
+
         self.setLayout(main_lay)
         self.setObjectName("eventFrame")
         self.setStyleSheet(IMPORTANT_ROW_STYLE if item.isImportant else LIST_ROW_STYLE)
