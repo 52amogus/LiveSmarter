@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (QListWidget,
                                QFrame,
                                QAbstractItemView)
 from PySide6.QtCore import Qt
-from model import Event
+from model import Event, save_item
 from data import *
 from datetime import timedelta, date as ddate, datetime
 from model import load_all
@@ -37,9 +37,11 @@ color:white;
 
 
 class EventRow(QFrame):
-    def __init__(self,item:Event):
+    def __init__(self,item:Event,item_date:ddate):
         super().__init__()
-        print(item.name)
+
+        self.date = item_date
+
         main_lay = QHBoxLayout()
         lay = QVBoxLayout()
         lay.setSpacing(0)
@@ -55,10 +57,17 @@ class EventRow(QFrame):
 
         lay.addWidget(time_label)
 
-        isChecked = QCheckBox()
-        isChecked.setFixedSize(50,50)
+        self.isCompleted = QCheckBox()
+        self.isCompleted.setChecked(item.completed)
+        self.isCompleted.setFixedSize(50,50)
 
-        main_lay.addWidget(isChecked)
+        def edit_completed():
+            item.completed = True
+            save_item(self.date,item)
+
+        self.isCompleted.clicked.connect(edit_completed)
+
+        main_lay.addWidget(self.isCompleted)
         main_lay.addLayout(lay)
 
         self.setLayout(main_lay)
@@ -68,21 +77,21 @@ class EventRow(QFrame):
 
 
 class EventList(QListWidget):
-    def __init__(self,all_items:list[Event]):
+    def __init__(self,all_items:list[Event],items_date:ddate):
         super().__init__()
         self.setObjectName("eventList")
         self.setSpacing(20)
         for item in all_items:
-            self.add_item(item)
+            self.add_item(item,items_date)
 
 
-    def reset_data(self,new:list[Event]):
+    def reset_data(self,new:list[Event],items_date:ddate):
         self.clear()
         for item in new:
-            self.add_item(item)
-    def add_item(self,item:Event):
+            self.add_item(item,items_date)
+    def add_item(self,item:Event,item_date:ddate):
         list_item = QListWidgetItem(self)
-        widget_item = EventRow(item)
+        widget_item = EventRow(item,item_date)
         self.addItem(list_item)
         list_item.setSizeHint(widget_item.sizeHint())
         self.setItemWidget(list_item, widget_item)
@@ -93,7 +102,7 @@ class DayPreview(QWidget):
         new_window = NewEventWindow(defaultDateTime=datetime(day.year,day.month,day.day) if separate else datetime.today())
 
         date = day
-        self.eventlist = EventList(load_all(date))
+        self.eventlist = EventList(load_all(date),date)
 
         def show_new():
             new_window.show()
