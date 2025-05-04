@@ -109,7 +109,7 @@ class DayPreview(QWidget):
 
         def create_new():
             item = new_window.create_new()
-            self.eventlist.add_item(item)
+            self.eventlist.add_item(item,day)
 
         new_window.btn_complete.clicked.connect(create_new)
 

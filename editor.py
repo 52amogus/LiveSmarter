@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from model import UUID
 from data import TITLE_STYLE, SUBTITLE_STYLE, ADD_BUTTON_STYLE, MAIN_BUTTON_STYLE
 from model import Event,save_item
 from PySide6.QtWidgets import QSizePolicy,QCheckBox,QComboBox,QInputDialog,QSpacerItem,QHBoxLayout,QVBoxLayout,QLabel,QWidget, QLineEdit, QPushButton, QDateTimeEdit, QFormLayout
@@ -64,7 +64,7 @@ class NewEventWindow(QWidget):
         self.setLayout(main_layout)
 
     def create_new(self) -> Event:
-        item = Event(self.name_enter.enter.text(), self.date_time_edit.enter.time().toPython(),self.isImportant.enter.isChecked())
+        item = Event(self.name_enter.enter.text(), self.date_time_edit.enter.time().toPython(),self.isImportant.enter.isChecked(),uuid=UUID())
         save_item(self.date_time_edit.enter.date().toPython(), item)
         self.close()
         return item
