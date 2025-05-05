@@ -44,16 +44,17 @@ WEEKDAYS = {
 }
 
 SIDEBAR_BUTTON_STYLE = """
-font:15px;
+font-size:15px;
 color:white;
-
+font-weight:500;
 border-radius:6;
 """
 
 SIDEBAR_BUTTON_STYLE_SELECTED = """
 font:15px;
+font-weight:700;
 color:white;
-background-color:#98BFFF;
+background-color:#95C8FF;
 border-radius:6;
 """
 
