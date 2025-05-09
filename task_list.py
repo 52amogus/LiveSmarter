@@ -92,6 +92,11 @@ class EventList(QListWidget):
     def add_item(self,item:Event,item_date:ddate):
         list_item = QListWidgetItem(self)
         widget_item = EventRow(item,item_date)
+        all_items:list[[QWidget]] = []
+        """
+        for i in range(self.count()):
+            all_items.append(self.item(i))
+"""
         self.addItem(list_item)
         list_item.setSizeHint(widget_item.sizeHint())
         self.setItemWidget(list_item, widget_item)

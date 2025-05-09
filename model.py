@@ -30,7 +30,13 @@ def UUID() -> str:
     return result
 
 class Event:
+    """
+    The class for managing calendar events
+    """
     def __init__(self,name:str,time:dtime,isImportant:bool,uuid:str,completed:bool=False):
+        """
+        Create an event
+        """
         self.name = name
         self.time = time
         self.isImportant = isImportant
@@ -111,7 +117,7 @@ def load_all(date:ddate) -> list[Event]:
                 )
         except FileNotFoundError as e:
             print(f"Nothing planned, {e}")
-    return all_items
+    return sorted(all_items,key=lambda x:x.time)
 
 
 def save_item(date:ddate,item:Event):
@@ -134,7 +140,10 @@ def get_active_dates(year:int,month:int):
             all_days = {i:len(listdir(
                 path.join(dir_path,str(year),str(month),str(i))
             )) for i in listdir(path.join(dir_path,str(year),str(month))) if i[0] != "."}
-    return all_days
+    keys = list(all_days.keys())
+    keys.sort()
+    results = {i: all_days[i] for i in keys}
+    return results
 
 
 setup_directory()

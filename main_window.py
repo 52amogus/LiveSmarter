@@ -2,8 +2,8 @@ from copy import deepcopy
 from functools import partial
 from typing import override
 from datetime import date as ddate
-
 from PySide6.QtWidgets import QApplication,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
+from PySide6.QtGui import QPixmap
 from data import *
 from editor import NewEventWindow
 from model import get_active_dates, load_all, Event, save_item
@@ -20,27 +20,30 @@ class Sidebar(QFrame):
         super().__init__()
         main_layout = QVBoxLayout()
         layout = QVBoxLayout()
-        self.btn_today = QPushButton("Сегодня")
-        self.btn_calendar = QPushButton("Календарь")
+
+        pm_today = QPixmap()
+        pm_today.load("icons/home.png")
+
+        pm_calendar = QPixmap()
+        pm_calendar.load("icons/calendar.png")
+
+        self.btn_today = QPushButton(" сегодня")
+        self.btn_today.setIcon(pm_today)
+
+        self.btn_calendar = QPushButton(" календарь")
+        self.btn_calendar.setIcon(pm_calendar)
+
+        self.setFixedWidth(200)
+
         self.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
         self.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
         menu_button_size([self.btn_today,self.btn_calendar])
         layout.addWidget(self.btn_today)
         layout.addWidget(self.btn_calendar)
-        title = QLabel("""
-Меню
-""")
-        title.setFixedSize(120,80)
-        title.setStyleSheet("""
-        font-size:25px;
-        font-weight:900;
-        color:white;
-        """)
-        main_layout.addWidget(title)
         main_layout.addLayout(layout)
-        main_layout.addSpacerItem(QSpacerItem(0,100))
-        self.setMaximumWidth(200)
-        self.setMinimumWidth(200)
+        #main_layout.addSpacerItem(QSpacerItem(0,100))
+        #self.setMaximumWidth(80)
+        #self.setMinimumWidth(80)
         self.setLayout(main_layout)
 
         self.setStyleSheet("""
@@ -86,7 +89,6 @@ class CalendarWindow(QWidget):
         def create_new():
             win_create.create_new()
             update_dates()
-
 
         def update_title():
             self.title.setText(f"{MONTHS["RUSSIAN"][self.selected_month-1]} {self.selected_year} г.")
