@@ -1,46 +1,46 @@
 from datetime import date
 
 MONTHS = {
-    "RUSSIAN":
-        ["Январь",
-        "Февраль",
-        "Март",
-        "Апрель",
-        "Май",
-        "Июнь",
-        "Июль",
-        "Август",
-        "Сентябрь",
-        "Октябрь",
-        "Ноябрь",
-        "Декабрь"],
-    "RUSSIAN-2":[
-        "Января",
-        "Февраля",
-        "Марта",
-        "Апреля",
-        "Мая",
-        "Июня",
-        "Июля",
-        "Августа",
-        "Сентября",
-        "Октября",
-        "Ноября",
-        "Декабря",
-    ],
-    "DEFAULT":None
+	"RUSSIAN":
+		["Январь",
+		 "Февраль",
+		 "Март",
+		 "Апрель",
+		 "Май",
+		 "Июнь",
+		 "Июль",
+		 "Август",
+		 "Сентябрь",
+		 "Октябрь",
+		 "Ноябрь",
+		 "Декабрь"],
+	"RUSSIAN-2":[
+		"Января",
+		"Февраля",
+		"Марта",
+		"Апреля",
+		"Мая",
+		"Июня",
+		"Июля",
+		"Августа",
+		"Сентября",
+		"Октября",
+		"Ноября",
+		"Декабря",
+	],
+	"DEFAULT":None
 }
 
 WEEKDAYS = {
-    "RUSSIAN":[
-        "Понедельник",
-        "Вторник",
-        "Среда",
-        "Четверг",
-        "Пятница",
-        "Суббота",
-        "Воскресенье",
-    ]
+	"RUSSIAN":[
+		"Понедельник",
+		"Вторник",
+		"Среда",
+		"Четверг",
+		"Пятница",
+		"Суббота",
+		"Воскресенье",
+	]
 }
 
 SIDEBAR_BUTTON_STYLE = """
@@ -70,10 +70,10 @@ font-weight:600;
 """
 
 def format_component(component:int):
-    return f"{component if component > 9 else f"0{component}"}"
+	return f"{component if component > 9 else f"0{component}"}"
 
 def format_date(date1:date):
-    return f"{date1.day} {MONTHS["RUSSIAN-2"][date1.month-1]} {date1.year}г."
+	return f"{date1.day} {MONTHS["RUSSIAN-2"][date1.month-1]} {date1.year}г."
 
 ADD_BUTTON_STYLE = """
 padding:14;

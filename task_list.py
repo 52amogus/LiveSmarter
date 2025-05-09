@@ -2,16 +2,16 @@ from typing import NamedTuple
 
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (QListWidget,
-                               QHeaderView,
-                                QCheckBox,
-                               QHBoxLayout,
-                               QVBoxLayout,
-                               QLabel,
-                               QListWidgetItem,
-                               QWidget,
-                                QPushButton,
-                               QFrame,
-                               QAbstractItemView)
+							   QHeaderView,
+							   QCheckBox,
+							   QHBoxLayout,
+							   QVBoxLayout,
+							   QLabel,
+							   QListWidgetItem,
+							   QWidget,
+							   QPushButton,
+							   QFrame,
+							   QAbstractItemView)
 from PySide6.QtCore import Qt
 from model import Event, save_item
 from data import *
@@ -37,162 +37,162 @@ color:white;
 
 
 class EventRow(QFrame):
-    def __init__(self,item:Event,item_date:ddate):
-        super().__init__()
+	def __init__(self,item:Event,item_date:ddate):
+		super().__init__()
 
-        self.date = item_date
+		self.date = item_date
 
-        main_lay = QHBoxLayout()
-        lay = QVBoxLayout()
-        lay.setSpacing(0)
+		main_lay = QHBoxLayout()
+		lay = QVBoxLayout()
+		lay.setSpacing(0)
 
-        name_label = QLabel(item.name)
-        lay.addWidget(name_label)
+		name_label = QLabel(item.name)
+		lay.addWidget(name_label)
 
-        time_label = QLabel(
-            f"{item.time.hour} : {item.time.minute if item.time.minute > 9 else f"0{item.time.minute}"}"
-        )
-        name_label.setObjectName("subtitle")
-        time_label.setObjectName("subtitle")
+		time_label = QLabel(
+			f"{item.time.hour} : {item.time.minute if item.time.minute > 9 else f"0{item.time.minute}"}"
+		)
+		name_label.setObjectName("subtitle")
+		time_label.setObjectName("subtitle")
 
-        lay.addWidget(time_label)
+		lay.addWidget(time_label)
 
-        self.isCompleted = QCheckBox()
-        self.isCompleted.setChecked(item.completed)
-        self.isCompleted.setFixedSize(50,50)
+		self.isCompleted = QCheckBox()
+		self.isCompleted.setChecked(item.completed)
+		self.isCompleted.setFixedSize(50,50)
 
-        def edit_completed():
-            item.completed = True
-            save_item(self.date,item)
+		def edit_completed():
+			item.completed = True
+			save_item(self.date,item)
 
-        self.isCompleted.clicked.connect(edit_completed)
+		self.isCompleted.clicked.connect(edit_completed)
 
-        main_lay.addWidget(self.isCompleted)
-        main_lay.addLayout(lay)
+		main_lay.addWidget(self.isCompleted)
+		main_lay.addLayout(lay)
 
-        self.setLayout(main_lay)
-        self.setObjectName("eventFrame")
-        self.setStyleSheet(IMPORTANT_ROW_STYLE if item.isImportant else LIST_ROW_STYLE)
+		self.setLayout(main_lay)
+		self.setObjectName("eventFrame")
+		self.setStyleSheet(IMPORTANT_ROW_STYLE if item.isImportant else LIST_ROW_STYLE)
 
 
 
 class EventList(QListWidget):
-    def __init__(self,all_items:list[Event],items_date:ddate):
-        super().__init__()
-        self.setObjectName("eventList")
-        self.setSpacing(20)
-        for item in all_items:
-            self.add_item(item,items_date)
+	def __init__(self,all_items:list[Event],items_date:ddate):
+		super().__init__()
+		self.setObjectName("eventList")
+		self.setSpacing(20)
+		for item in all_items:
+			self.add_item(item,items_date)
 
 
-    def reset_data(self,new:list[Event],items_date:ddate):
-        self.clear()
-        for item in new:
-            self.add_item(item,items_date)
-    def add_item(self,item:Event,item_date:ddate):
-        list_item = QListWidgetItem(self)
-        widget_item = EventRow(item,item_date)
-        all_items:list[[QWidget]] = []
-        """
-        for i in range(self.count()):
-            all_items.append(self.item(i))
+	def reset_data(self,new:list[Event],items_date:ddate):
+		self.clear()
+		for item in new:
+			self.add_item(item,items_date)
+	def add_item(self,item:Event,item_date:ddate):
+		list_item = QListWidgetItem(self)
+		widget_item = EventRow(item,item_date)
+		all_items:list[[QWidget]] = []
+		"""
+		for i in range(self.count()):
+			all_items.append(self.item(i))
 """
-        self.addItem(list_item)
-        list_item.setSizeHint(widget_item.sizeHint())
-        self.setItemWidget(list_item, widget_item)
+		self.addItem(list_item)
+		list_item.setSizeHint(widget_item.sizeHint())
+		self.setItemWidget(list_item, widget_item)
 
 class DayPreview(QWidget):
-    def __init__(self,day:ddate,separate=False):
-        super().__init__()
-        new_window = NewEventWindow(defaultDateTime=datetime(day.year,day.month,day.day) if separate else datetime.today())
+	def __init__(self,day:ddate,separate=False):
+		super().__init__()
+		new_window = NewEventWindow(defaultDateTime=datetime(day.year,day.month,day.day) if separate else datetime.today())
 
-        date = day
-        self.eventlist = EventList(load_all(date),date)
+		date = day
+		self.eventlist = EventList(load_all(date),date)
 
-        def show_new():
-            new_window.show()
+		def show_new():
+			new_window.show()
 
-        def create_new():
-            item = new_window.create_new()
-            self.eventlist.add_item(item,day)
+		def create_new():
+			item = new_window.create_new()
+			self.eventlist.add_item(item,day)
 
-        new_window.btn_complete.clicked.connect(create_new)
+		new_window.btn_complete.clicked.connect(create_new)
 
-        layout = QVBoxLayout()
-        action_bar = QHBoxLayout()
+		layout = QVBoxLayout()
+		action_bar = QHBoxLayout()
 
-        title = QLabel(format_date(day) if separate else "Сегодня")
+		title = QLabel(format_date(day) if separate else "Сегодня")
 
-        if separate:
-            self.resize(700,500)
+		if separate:
+			self.resize(700,500)
 
-        title.setStyleSheet(TITLE_STYLE)
-        btn_new = QPushButton("+")
-        btn_new.setMaximumSize(50,50)
-        btn_new.setStyleSheet(ADD_BUTTON_STYLE)
-        btn_new.clicked.connect(show_new)
-        action_bar.addWidget(title)
-        action_bar.addWidget(btn_new)
-        layout.addLayout(action_bar)
-        layout.addWidget(self.eventlist)
-        self.setLayout(layout)
+		title.setStyleSheet(TITLE_STYLE)
+		btn_new = QPushButton("+")
+		btn_new.setMaximumSize(50,50)
+		btn_new.setStyleSheet(ADD_BUTTON_STYLE)
+		btn_new.clicked.connect(show_new)
+		action_bar.addWidget(title)
+		action_bar.addWidget(btn_new)
+		layout.addLayout(action_bar)
+		layout.addWidget(self.eventlist)
+		self.setLayout(layout)
 
 class ActiveDateRow(QFrame):
-    def __init__(self, day:tuple[str,str,str,ddate]):
-        super().__init__()
-        self.setStyleSheet(LIST_ROW_STYLE)
-        self.date = day[3]
-        layout = QHBoxLayout()
-        tx_date = QLabel(f"{day[1]}, {format_component(day[3].day)}.{format_component(day[3].month)}")
-        tx_amount = QLabel(day[2])
-        tx_amount.setStyleSheet("""
+	def __init__(self, day:tuple[str,str,str,ddate]):
+		super().__init__()
+		self.setStyleSheet(LIST_ROW_STYLE)
+		self.date = day[3]
+		layout = QHBoxLayout()
+		tx_date = QLabel(f"{day[1]}, {format_component(day[3].day)}.{format_component(day[3].month)}")
+		tx_amount = QLabel(day[2])
+		tx_amount.setStyleSheet("""
                     border-radius:20;
                     background-color:white;
                     color:#3B9AFF;
                     padding:10;
                     """)
 
-        def show_preview():
-            DayPreview(self.date,separate=True).show()
+		def show_preview():
+			DayPreview(self.date,separate=True).show()
 
 
-        self.btn_go = QPushButton("Перейти")
-        self.btn_go.setStyleSheet("""
+		self.btn_go = QPushButton("Перейти")
+		self.btn_go.setStyleSheet("""
         padding:10;
         border:2px solid white 10px;
         """)
-        self.btn_go.setMaximumSize(120,50)
-        self.btn_go.clicked.connect(show_preview)
+		self.btn_go.setMaximumSize(120,50)
+		self.btn_go.clicked.connect(show_preview)
 
-        #layout.setSpacing(0)
+		#layout.setSpacing(0)
 
-        tx_amount.setMaximumSize(40,40)
-        layout.addWidget(tx_date)
-        layout.addWidget(tx_amount)
-        layout.addWidget(self.btn_go)
+		tx_amount.setMaximumSize(40,40)
+		layout.addWidget(tx_date)
+		layout.addWidget(tx_amount)
+		layout.addWidget(self.btn_go)
 
 
-        self.setLayout(layout)
+		self.setLayout(layout)
 
 
 
 class ActiveDatesList(QListWidget):
-    def __init__(self,all_items:list[tuple[str,str,str,ddate]]):
-        super().__init__()
-        self.setObjectName("activeDatesList")
-        self.setSpacing(20)
-        for item in all_items:
-            self.add_item(item)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+	def __init__(self,all_items:list[tuple[str,str,str,ddate]]):
+		super().__init__()
+		self.setObjectName("activeDatesList")
+		self.setSpacing(20)
+		for item in all_items:
+			self.add_item(item)
+		self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
-    def reset_data(self,new:list[tuple[str,str,str,ddate]]):
-        self.clear()
-        for item in new:
-            self.add_item(item)
+	def reset_data(self,new:list[tuple[str,str,str,ddate]]):
+		self.clear()
+		for item in new:
+			self.add_item(item)
 
-    def add_item(self,item:tuple[str,str,str,ddate]):
-        list_item = QListWidgetItem(self)
-        widget_item = ActiveDateRow(item)
-        self.addItem(list_item)
-        list_item.setSizeHint(widget_item.sizeHint())
-        self.setItemWidget(list_item, widget_item)
+	def add_item(self,item:tuple[str,str,str,ddate]):
+		list_item = QListWidgetItem(self)
+		widget_item = ActiveDateRow(item)
+		self.addItem(list_item)
+		list_item.setSizeHint(widget_item.sizeHint())
+		self.setItemWidget(list_item, widget_item)

@@ -4,21 +4,21 @@ from main_window import MainWindow
 from model import Event
 
 if __name__ == "__main__":
-    help(Event)
-    app = QApplication()
-    img:QPixmap = QPixmap()
-    img.load("icon.png")
-    app.setWindowIcon(img)
-    win = MainWindow()
-    win.setWindowTitle("LiveSmarter")
-    win.resize(900,600)
+	help(Event)
+	app = QApplication()
+	img:QPixmap = QPixmap()
+	img.load("icon.png")
+	app.setWindowIcon(img)
+	win = MainWindow()
+	win.setWindowTitle("LiveSmarter")
+	win.resize(900,600)
 
 
 
-    win.show()
+	win.show()
 
-    #a = QMessageBox()
-    #a.setText("Hello!")
-    #a.show()
+	#a = QMessageBox()
+	#a.setText("Hello!")
+	#a.show()
 
-    app.exec()
+	app.exec()
