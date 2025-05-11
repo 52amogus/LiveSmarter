@@ -43,10 +43,13 @@ class NewEventWindow(QWidget):
 		main_layout = QVBoxLayout()
 
 		title = QLabel("Новая задача")
-		title.setStyleSheet(TITLE_STYLE)
+		title.setStyleSheet("""
+		font-size:40px;
+		font-weight:900;
+		""")
 
 		self.btn_complete.setStyleSheet(MAIN_BUTTON_STYLE)
-		self.btn_complete.setFixedSize(200,50)
+		self.btn_complete.setFixedSize(190,40)
 
 		main_layout.addWidget(title,alignment=Qt.AlignmentFlag.AlignCenter)
 

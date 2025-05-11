@@ -4,7 +4,6 @@ from main_window import MainWindow
 from model import Event
 
 if __name__ == "__main__":
-	help(Event)
 	app = QApplication()
 	img:QPixmap = QPixmap()
 	img.load("icon.png")
@@ -12,8 +11,6 @@ if __name__ == "__main__":
 	win = MainWindow()
 	win.setWindowTitle("LiveSmarter")
 	win.resize(900,600)
-
-
 
 	win.show()
 
