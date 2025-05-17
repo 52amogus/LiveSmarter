@@ -1,7 +1,7 @@
 from datetime import time as dtime,date as ddate
 from itertools import repeat
 from os import mkdir, environ, path, listdir
-from typing import Any, Self, Callable
+from typing import Any, Self, Callable,Optional
 import json
 from string import ascii_letters,digits
 from secrets import choice
@@ -22,9 +22,15 @@ class EventDecoderError(Exception):...
 
 def UUID() -> str:
 	ids = get_uuids()
-	result = "".join([choice(ascii_letters+digits) for _ in repeat(None,40)])
+	result = "".join([
+		choice(ascii_letters+digits)
+		for _ in repeat(None,40)
+	])
 	while result in ids:
-		result = "".join([choice(ascii_letters+digits) for _ in repeat(None, 12)])
+		result = "".join([
+			choice(ascii_letters+digits)
+			for _ in repeat(None, 12)
+		])
 	with open(path.join(app_path,"local_uuids.txt"),"a") as file:
 		file.write(f"\n{result}")
 	return result
@@ -33,7 +39,12 @@ class Event:
 	"""
 	The class for managing calendar events
 	"""
-	def __init__(self,name:str,time:dtime,isImportant:bool,uuid:str,completed:bool=False):
+	def __init__(self,
+				 name:str,
+				 time:dtime,
+				 isImportant:bool,
+				 uuid:str,
+				 completed:bool=False):
 		"""
 		Create an event
 		"""
@@ -45,10 +56,10 @@ class Event:
 		self.id = uuid
 
 	def __hash__(self):
-		return self.name,self.time.isoformat(),self.isImportant
+		return self.id
 
 	@classmethod
-	def decode(cls,data:dict[str,Any],uuid:str) -> Self:
+	def decode(cls,data:dict[str,Any],uuid:str) -> Optional[Self]:
 		event_version = data["version"]
 		if event_version == CURRENT_FORMAT_VERSION:
 			try:
@@ -64,7 +75,7 @@ class Event:
 				raise EventDecoderError(f"\nevent version is alright, but the contents are corrupted\n{e}!")
 		else:
 			if event_version in FORMATTERS:
-				cls.decode(FORMATTERS[event_version](data),UUID())
+				return cls.decode(FORMATTERS[event_version](data),UUID())
 			else:
 				raise EventDecoderError(f"\nCannot decode event of version {event_version}!")
 

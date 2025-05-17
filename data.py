@@ -80,7 +80,7 @@ padding:14;
 background-color:#3B9AFF;
 color:white;
 font-size:30px;
-font-weight:900;
+font-weight:600;
 border-radius:10;
 """
 

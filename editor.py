@@ -55,7 +55,9 @@ class NewEventWindow(QWidget):
 
 		def select_tag():
 			QInputDialog().getText(QLineEdit(),"2","3")
-			self.choose_tags.enter.setItemText(self.choose_tags.enter.currentIndex(),"NEW!!")
+			self.choose_tags.enter.setItemText(
+				self.choose_tags.enter.currentIndex(),"NEW!!"
+			)
 		self.choose_tags.enter.currentIndexChanged.connect(select_tag)
 
 
@@ -68,7 +70,9 @@ class NewEventWindow(QWidget):
 
 	def create_new(self) -> Event:
 		item = Event(self.name_enter.enter.text(), self.date_time_edit.enter.time().toPython(),self.isImportant.enter.isChecked(),uuid=UUID())
-		save_item(self.date_time_edit.enter.date().toPython(), item)
+		save_item(
+			self.date_time_edit.enter.date().toPython(),
+			item)
 		self.close()
 		return item
 

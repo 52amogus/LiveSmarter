@@ -9,7 +9,7 @@ if __name__ == "__main__":
 	img.load("icon.png")
 	app.setWindowIcon(img)
 	win = MainWindow()
-	win.setWindowTitle("LiveSmarter")
+	#win.setWindowTitle("LiveSmarter")
 	win.resize(900,600)
 
 	win.show()
