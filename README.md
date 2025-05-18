@@ -14,7 +14,7 @@ Download the source code.
   ```
 + Or PyQt6
   ```
-  pip install pyside6
+  pip install pyqt6
    ```
 
 ## ⏯️ Running
@@ -42,6 +42,8 @@ The applicaion is saved to the dist folder and you can run it anytime or share w
 run the following:
 
 ```python <PATH TO MAIN.PY>```
+
+## Usage
 
 
 
