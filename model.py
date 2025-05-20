@@ -17,7 +17,6 @@ FORMATTERS:dict[str,Callable[[dict],dict]] = {
 	"1.0":format_1_0
 }
 
-
 class EventDecoderError(Exception):...
 
 def UUID() -> str:
@@ -91,6 +90,8 @@ app_path = f"{environ.get("HOME")}/Library/Application Support/live-smarter"
 
 dir_path = path.join(app_path,"db")
 
+timetables_path = path.join(dir_path,"timetables")
+
 
 def get_uuids() -> list[str]:
 	with open(path.join(app_path,"local_uuids.txt")) as file:
@@ -111,8 +112,12 @@ def create_date_path(date:ddate):
 	return path.join(str(date.year),str(date.month),str(date.day))
 
 
-def load_all(date:ddate) -> list[Event]:
-	load_dir_path = create_date_path(date)
+def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
+	if not timetable:
+		load_dir_path = create_date_path(date)
+	else:
+		load_dir_path = path.join(timetables_path,str(date))
+
 	try:
 		all_item_names = listdir(path.join(dir_path,load_dir_path))
 	except FileNotFoundError:
@@ -141,6 +146,16 @@ def save_item(date:ddate,item:Event):
 	with open(path.join(p3,item.id),"w") as file:
 		json.dump(item.save(),file)
 
+
+def save_to_timetable(weekday:int,item:Event):
+	with open(path.join(timetables_path,
+						str(weekday),
+						item.id)) as file:
+		json.dump(item.save(),file)
+
+
+def get_timetable(weekday:int):
+	return load_all(weekday,timetable=True)
 
 def get_active_dates(year:int,month:int):
 	all_days:dict[str:int] = {}

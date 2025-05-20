@@ -2,7 +2,7 @@ from copy import deepcopy
 from functools import partial
 from typing import override
 from datetime import date as ddate
-from PySide6.QtWidgets import QApplication,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
+from PySide6.QtWidgets import QApplication,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
 from PySide6.QtGui import QPixmap
 from data import *
 from editor import NewEventWindow
@@ -27,23 +27,28 @@ class Sidebar(QFrame):
 		pm_calendar = QPixmap()
 		pm_calendar.load("icons/calendar.png")
 
+		pm_timetables = QPixmap()
+		pm_timetables.load("icons/timetables.png")
+
 		self.btn_today = QPushButton(" сегодня")
 		self.btn_today.setIcon(pm_today)
 
 		self.btn_calendar = QPushButton(" календарь")
 		self.btn_calendar.setIcon(pm_calendar)
 
+		self.btn_timetables = QPushButton(" расписания")
+		self.btn_timetables.setIcon(pm_timetables)
+
 		self.setFixedWidth(200)
 
 		self.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 		self.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+		self.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
 		menu_button_size([self.btn_today,self.btn_calendar])
 		layout.addWidget(self.btn_today)
 		layout.addWidget(self.btn_calendar)
+		layout.addWidget(self.btn_timetables)
 		main_layout.addLayout(layout)
-		#main_layout.addSpacerItem(QSpacerItem(0,100))
-		#self.setMaximumWidth(80)
-		#self.setMinimumWidth(80)
 		self.setLayout(main_layout)
 
 		self.setStyleSheet("""
@@ -136,6 +141,53 @@ class CalendarWindow(QWidget):
 
 		self.setLayout(layout)
 
+class TimetablesWindow(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		layout = QVBoxLayout()
+
+		self.selected_weekday = 1
+
+		self.title = QLabel()
+
+		self.title.setStyleSheet(TITLE_STYLE)
+
+		buttons = QHBoxLayout()
+		btn_next = QPushButton(">")
+		btn_back = QPushButton("<")
+		buttons.addWidget(btn_back)
+		buttons.addWidget(btn_next)
+		buttons.addSpacerItem(QSpacerItem(100, 0))
+
+		event_list = QListWidget()
+
+		def update_title():
+			self.title.setText(WEEKDAYS["RUSSIAN"][self.selected_weekday-1])
+
+		update_title()
+
+		def next_weekday():
+			if self.selected_weekday < 7:
+				self.selected_weekday+=1
+			else:
+				self.selected_weekday = 1
+			update_title()
+
+		def previous_weekday():
+			if self.selected_weekday > 1:
+				self.selected_weekday -= 1
+			else:
+				self.selected_weekday = 7
+			update_title()
+
+		btn_next.clicked.connect(next_weekday)
+		btn_back.clicked.connect(previous_weekday)
+		layout.addWidget(self.title)
+		layout.addWidget(event_list)
+		layout.addLayout(buttons)
+		self.setLayout(layout)
+
 class MainWindow(QWidget):
 	def __init__(self):
 		super().__init__()
@@ -148,7 +200,8 @@ class MainWindow(QWidget):
 
 		TABS:dict[str,QWidget] = {
 			"today":today_window,
-			"calendar":CalendarWindow()
+			"calendar":CalendarWindow(),
+			"timetables":TimetablesWindow(),
 		}
 
 
@@ -160,14 +213,25 @@ class MainWindow(QWidget):
 			set_tab("today")
 			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+
 
 		def set_calendar():
 			set_tab("calendar")
 			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+
+
+		def set_timetables():
+			set_tab("timetables")
+			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 
 		sidebar.btn_today.clicked.connect(set_today)
 		sidebar.btn_calendar.clicked.connect(set_calendar)
+		sidebar.btn_timetables.clicked.connect(set_timetables)
 		self.setLayout(layout)
 
 

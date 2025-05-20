@@ -1,7 +1,6 @@
-from PySide6.QtWidgets import QApplication,QMessageBox,QLabel
+from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPixmap,QImage
 from main_window import MainWindow
-from model import Event
 
 if __name__ == "__main__":
 	app = QApplication()

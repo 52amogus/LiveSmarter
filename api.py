@@ -7,13 +7,12 @@ from model import Event
 
 class ServerConfig:
 	address = '5.129.201.198'
-	port = 8080
+	port = 5050
 	addr = (address,port)
 
 class Session:
-	def __init__(self,address:tuple[str,int],account_uuid,token):
-		self.client = Client(socket.AF_INET,socket.SOCK_STREAM)
-		self.client.connect(address)
+	def __init__(self,client,account_uuid,token):
+		self.client = client
 
 		self.id = self.client.app_login(account_uuid,token)
 
@@ -65,7 +64,11 @@ class Session:
 		self.request(msg,"action",is_result=False)
 
 
-class Client(socket):
+class Client(socket.socket):
+	def __init__(self,addr:tuple[str,int]):
+		super().__init__(socket.AF_INET,socket.SOCK_STREAM)
+		print(f"Connecting {addr}")
+		self.connect(addr)
 	def request(self, msg, msgtype, *, is_result:bool) -> Optional:
 		"""
 		Send a request to the server and receive a response if there is one.
