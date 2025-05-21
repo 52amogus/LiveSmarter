@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date,time as dtime
 
 MONTHS = {
 	"RUSSIAN":
@@ -74,6 +74,9 @@ def format_component(component:int):
 
 def format_date(date1:date):
 	return f"{date1.day} {MONTHS["RUSSIAN-2"][date1.month-1]} {date1.year}г."
+
+def format_time(time:dtime):
+	return f"{time.hour}:{format_component(time.minute)}"
 
 ADD_BUTTON_STYLE = """
 padding:14;

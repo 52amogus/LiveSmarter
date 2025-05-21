@@ -2,8 +2,9 @@ from copy import deepcopy
 from functools import partial
 from typing import override
 from datetime import date as ddate
-from PySide6.QtWidgets import QApplication,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
+from PySide6.QtWidgets import QApplication,QMenu,QMainWindow,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
 from PySide6.QtGui import QPixmap
+import model
 from data import *
 from editor import NewEventWindow
 from model import get_active_dates, load_all, Event, save_item
@@ -153,38 +154,46 @@ class TimetablesWindow(QWidget):
 
 		self.title.setStyleSheet(TITLE_STYLE)
 
+		btn_new = QPushButton("+")
+		btn_new.setStyleSheet(ADD_BUTTON_STYLE)
+		btn_new.setFixedSize(50,50)
+		title_layout = QHBoxLayout()
+		title_layout.addWidget(self.title)
+		title_layout.addWidget(btn_new)
+
 		buttons = QHBoxLayout()
 		btn_next = QPushButton(">")
 		btn_back = QPushButton("<")
 		buttons.addWidget(btn_back)
 		buttons.addWidget(btn_next)
-		buttons.addSpacerItem(QSpacerItem(100, 0))
+		buttons.addSpacerItem(QSpacerItem(200, 0))
 
-		event_list = QListWidget()
+		self.event_list = EventList(model.get_timetable(self.selected_weekday),self.selected_weekday)
 
-		def update_title():
+		def update():
 			self.title.setText(WEEKDAYS["RUSSIAN"][self.selected_weekday-1])
+			self.event_list.reset_data(model.get_timetable(self.selected_weekday),self.selected_weekday,isTimetable=True)
 
-		update_title()
+		update()
 
 		def next_weekday():
 			if self.selected_weekday < 7:
 				self.selected_weekday+=1
 			else:
 				self.selected_weekday = 1
-			update_title()
+			update()
 
 		def previous_weekday():
 			if self.selected_weekday > 1:
 				self.selected_weekday -= 1
 			else:
 				self.selected_weekday = 7
-			update_title()
+			update()
 
 		btn_next.clicked.connect(next_weekday)
 		btn_back.clicked.connect(previous_weekday)
-		layout.addWidget(self.title)
-		layout.addWidget(event_list)
+		layout.addLayout(title_layout)
+		layout.addWidget(self.event_list)
 		layout.addLayout(buttons)
 		self.setLayout(layout)
 
@@ -233,6 +242,7 @@ class MainWindow(QWidget):
 		sidebar.btn_calendar.clicked.connect(set_calendar)
 		sidebar.btn_timetables.clicked.connect(set_timetables)
 		self.setLayout(layout)
+		#self.menuBar().addMenu(QMenu("Hello"))
 
 
 

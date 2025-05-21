@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (QListWidget,
 							   QFrame,
 							   QAbstractItemView)
 from PySide6.QtCore import Qt
-from model import Event, save_item
+from model import Event, save_item,save_to_timetable
 from data import *
 from datetime import timedelta, date as ddate, datetime
 from model import load_all
@@ -37,7 +37,7 @@ color:white;
 
 
 class EventRow(QFrame):
-	def __init__(self,item:Event,item_date:ddate):
+	def __init__(self,item:Event,item_date:ddate|int,isTimetable):
 		super().__init__()
 
 		self.date = item_date
@@ -63,7 +63,11 @@ class EventRow(QFrame):
 
 		def edit_completed():
 			item.completed = True
-			save_item(self.date,item)
+			if isTimetable:
+				save_to_timetable(item_date,item)
+			else:
+				save_item(self.date,item)
+
 
 		self.isCompleted.clicked.connect(edit_completed)
 
@@ -77,26 +81,21 @@ class EventRow(QFrame):
 
 
 class EventList(QListWidget):
-	def __init__(self,all_items:list[Event],items_date:ddate):
+	def __init__(self,all_items:list[Event],items_date:ddate|int,isTimetable=False):
 		super().__init__()
 		self.setObjectName("eventList")
 		self.setSpacing(20)
 		for item in all_items:
-			self.add_item(item,items_date)
+			self.add_item(item,items_date,isTimetable)
 
 
-	def reset_data(self,new:list[Event],items_date:ddate):
+	def reset_data(self,new:list[Event],items_date:ddate,isTimetable):
 		self.clear()
 		for item in new:
-			self.add_item(item,items_date)
-	def add_item(self,item:Event,item_date:ddate):
+			self.add_item(item,items_date,isTimetable)
+	def add_item(self,item:Event,item_date:ddate,isTimetable):
 		list_item = QListWidgetItem(self)
-		widget_item = EventRow(item,item_date)
-		all_items:list[[QWidget]] = []
-		"""
-		for i in range(self.count()):
-			all_items.append(self.item(i))
-"""
+		widget_item = EventRow(item,item_date,isTimetable)
 		self.addItem(list_item)
 		list_item.setSizeHint(widget_item.sizeHint())
 		self.setItemWidget(list_item, widget_item)
@@ -114,7 +113,7 @@ class DayPreview(QWidget):
 
 		def create_new():
 			item = new_window.create_new()
-			self.eventlist.add_item(item,day)
+			self.eventlist.add_item(item,day,False)
 
 		new_window.btn_complete.clicked.connect(create_new)
 

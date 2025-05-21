@@ -1,6 +1,11 @@
+import sys
+
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QPixmap,QImage
 from main_window import MainWindow
+import model
+from multiprocessing import Process
+from threading import Thread, Event
 
 if __name__ == "__main__":
 	app = QApplication()
@@ -13,8 +18,17 @@ if __name__ == "__main__":
 
 	win.show()
 
-	#a = QMessageBox()
-	#a.setText("Hello!")
-	#a.show()
+	print("Starting")
+
+	signal = Event()
+
+	#signal.set()
+
+	listener = Thread(target=model.notificationListener,args=[signal])
+
+	listener.start()
 
 	app.exec()
+
+	signal.set()
+
