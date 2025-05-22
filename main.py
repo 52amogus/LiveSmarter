@@ -8,7 +8,7 @@ from threading import Thread, Event
 if __name__ == "__main__":
 	app = QApplication(argv)
 	img = QPixmap()
-	img.load("icon.png")
+	img.load("icons/icon.png")
 	app.setWindowIcon(img)
 	win = MainWindow(app.styleHints().colorScheme())
 	win.setWindowTitle("LiveSmarter")

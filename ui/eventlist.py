@@ -26,7 +26,6 @@ class EventRow(QFrame):
 		lay.addWidget(time_label)
 
 		self.isCompleted = QCheckBox()
-		self.isCompleted.setEnabled(False)
 		self.isCompleted.setChecked(item.completed)
 		self.isCompleted.setFixedSize(50,50)
 
