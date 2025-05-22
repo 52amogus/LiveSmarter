@@ -54,14 +54,14 @@ SIDEBAR_BUTTON_STYLE_SELECTED = """
 font:15px;
 font-weight:700;
 color:white;
-background-color:#95C8FF;
+background-color:#3B9AFF;
 border-radius:6;
 """
 
 TITLE_STYLE = """
 font-size:54px;
 font-weight:900;
-color:#3B9AFF;
+
 """
 
 SUBTITLE_STYLE = """
@@ -87,10 +87,26 @@ font-weight:600;
 border-radius:10;
 """
 
+LIST_ROW_STYLE = """
+background-color:#3B9AFF;
+border-radius:10;
+font-size:20px;
+font-weight:600;
+color:white;
+"""
+
+IMPORTANT_ROW_STYLE = """
+background-color:#FF4C4C;
+border-radius:10;
+font-size:20px;
+font-weight:900;
+color:white;
+"""
+
 MAIN_BUTTON_STYLE = """
 background-color:#3B9AFF;
 color:white;
-font-size:25px;
+font-size:15px;
 font-weight:900;
 border-radius:10;
 """

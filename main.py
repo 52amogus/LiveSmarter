@@ -1,19 +1,17 @@
-import sys
-
-from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QPixmap,QImage
-from main_window import MainWindow
+from PySide6.QtWidgets import QApplication,QMenu,QSystemTrayIcon,QLabel
+from sys import argv
+from PySide6.QtGui import QPixmap,QImage,QAction,QActionGroup
+from ui.main_windows import MainWindow
 import model
-from multiprocessing import Process
 from threading import Thread, Event
 
 if __name__ == "__main__":
-	app = QApplication()
-	img:QPixmap = QPixmap()
+	app = QApplication(argv)
+	img = QPixmap()
 	img.load("icon.png")
 	app.setWindowIcon(img)
-	win = MainWindow()
-	#win.setWindowTitle("LiveSmarter")
+	win = MainWindow(app.styleHints().colorScheme())
+	win.setWindowTitle("LiveSmarter")
 	win.resize(900,600)
 
 	win.show()
@@ -22,7 +20,12 @@ if __name__ == "__main__":
 
 	signal = Event()
 
-	#signal.set()
+
+	tray = QSystemTrayIcon()
+	tray.setVisible(True)
+	tray.setIcon(img)
+
+
 
 	listener = Thread(target=model.notificationListener,args=[signal])
 

@@ -1,7 +1,7 @@
 from datetime import time as dtime,date as ddate,timedelta,datetime
 from functools import partial
 from itertools import repeat
-from os import mkdir, environ, path, listdir, remove
+from os import mkdir, environ, path, listdir, remove,rmdir
 from typing import Any, Self, Callable,Optional
 from mac_notifications import client
 import json,time as ptime
@@ -22,16 +22,16 @@ FORMATTERS:dict[str,Callable[[dict],dict]] = {
 
 class EventDecoderError(Exception):...
 
-print("D",dtime())
 
 def remind_later(title:str,time:str):
-	client.create_notification(title=title,subtitle=time,delay=timedelta(minutes=15))
+	client.create_notification(
+		title=f"{title}(повтор)",
+		subtitle=time,delay=timedelta(minutes=5))
 
 def notificationListener(signal:threading.Event):
 	today = ddate.today()
 	upcoming = load_all(today)
 	while not signal.is_set():
-		print("Waiting")
 		for event in upcoming:
 			current_time = datetime.now().time()
 			if current_time >= event.time:
@@ -39,11 +39,12 @@ def notificationListener(signal:threading.Event):
 				notification_subtitle = format_time(event.time)
 				client.create_notification(title=notification_title,
 										   subtitle=notification_subtitle,
-										   action_button_str="Напомнить через 15 минут",
+										   action_button_str="Напомнить через 5 мин.",
 										   action_callback=partial(remind_later,notification_title,notification_subtitle))
 				delete(today,event.id)
 		upcoming = load_all(today)
 		ptime.sleep(2)
+	client.stop_listening_for_callbacks()
 
 def UUID() -> str:
 	ids = get_uuids()
@@ -138,10 +139,18 @@ def create_date_path(date:ddate):
 	return path.join(str(date.year),str(date.month),str(date.day))
 
 def delete(date:ddate,uuid:str):
-	date_path = path.join(dir_path,
-		create_date_path(date),uuid
-						  )
-	remove(date_path)
+	date_path = path.join(dir_path,create_date_path(date))
+	event_path = path.join(date_path,uuid)
+	remove(event_path)
+	if len(listdir(date_path)) == 0:
+		rmdir(date_path)
+		month_path = path.join(dir_path,str(date.year),str(date.month))
+		if len(listdir(month_path)) == 0:
+			rmdir(month_path)
+			year_path = path.join(dir_path,str(date.year))
+			if len(listdir(year_path)) == 0:
+				rmdir(year_path)
+
 
 def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
 	if not timetable:
@@ -158,7 +167,6 @@ def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
 	for name in all_item_names:
 		try:
 			with open(path.join(dir_path,load_dir_path,name)) as file:
-				print(file)
 				all_items.append(
 					Event.decode(json.load(file),name)
 				)

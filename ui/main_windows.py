@@ -1,14 +1,15 @@
-from copy import deepcopy
-from functools import partial
 from typing import override
 from datetime import date as ddate
 from PySide6.QtWidgets import QApplication,QMenu,QMainWindow,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
 from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QEvent,Qt,Signal
 import model
 from data import *
-from editor import NewEventWindow
+from .new_event import NewEventWindow
 from model import get_active_dates, load_all, Event, save_item
-from task_list import EventList, ActiveDatesList,DayPreview
+from .eventlist import EventList
+from .datelist import ActiveDatesList
+from .day_preview import DayPreview
 
 
 def menu_button_size(widgets:list[QWidget]):
@@ -52,11 +53,19 @@ class Sidebar(QFrame):
 		main_layout.addLayout(layout)
 		self.setLayout(main_layout)
 
+	def set_dark_mode(self):
 		self.setStyleSheet("""
-        background-color:#3B9AFF;
+        background-color:#404040;
         padding:12;
         border-radius:10;
         """)
+	def set_light_mode(self):
+		self.setStyleSheet("""
+		background-color:#CCCCCC;
+		padding:12;
+		border-radius:10;
+		""")
+
 
 
 
@@ -83,10 +92,15 @@ class CalendarWindow(QWidget):
 		select_sort_mode = QComboBox()
 		select_sort_mode.addItems(["дате","количеству задач"])
 
-		win_create = NewEventWindow()
+		win_create = NewEventWindow(
+			requires_full_datetime=True,
+			default_year=self.selected_year,
+			default_month=self.selected_month
+		)
 
 		title_layout.addWidget(self.title)
-		#title_layout.addSpacerItem(QSpacerItem(100,0))
+		event = QEvent(QEvent.Type.ThemeChange)
+		event.Type
 		title_layout.addWidget(btn_new)
 
 		def open_new():
@@ -107,6 +121,7 @@ class CalendarWindow(QWidget):
 				self.selected_year+=1
 			update_title()
 			update_dates()
+			win_create.setDefault(self.selected_year,self.selected_month)
 		def back():
 			if self.selected_month > 1:
 				self.selected_month -= 1
@@ -115,6 +130,7 @@ class CalendarWindow(QWidget):
 				self.selected_year -= 1
 			update_title()
 			update_dates()
+			win_create.setDefault(self.selected_year, self.selected_month)
 
 
 		buttons.addWidget(btn_back)
@@ -198,11 +214,11 @@ class TimetablesWindow(QWidget):
 		self.setLayout(layout)
 
 class MainWindow(QWidget):
-	def __init__(self):
+	def __init__(self,initialTheme):
 		super().__init__()
 		layout = QHBoxLayout()
-		sidebar = Sidebar()
-		layout.addWidget(sidebar)
+		self.sidebar = Sidebar()
+		layout.addWidget(self.sidebar)
 		today_window = DayPreview(ddate.today())
 		layout.addWidget(today_window)
 
@@ -220,29 +236,47 @@ class MainWindow(QWidget):
 
 		def set_today():
 			set_tab("today")
-			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
-			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
+			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
 
 
 		def set_calendar():
 			set_tab("calendar")
-			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
-			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
+			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
 
 
 		def set_timetables():
 			set_tab("timetables")
-			sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
+			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 
-		sidebar.btn_today.clicked.connect(set_today)
-		sidebar.btn_calendar.clicked.connect(set_calendar)
-		sidebar.btn_timetables.clicked.connect(set_timetables)
+		self.sidebar.btn_today.clicked.connect(set_today)
+		self.sidebar.btn_calendar.clicked.connect(set_calendar)
+		self.sidebar.btn_timetables.clicked.connect(set_timetables)
 		self.setLayout(layout)
-		#self.menuBar().addMenu(QMenu("Hello"))
+		self.theme = initialTheme
+
+		if self.theme == Qt.ColorScheme.Dark:
+			self.sidebar.set_dark_mode()
+			self.theme = Qt.ColorScheme.Dark
+		else:
+			self.sidebar.set_light_mode()
+			self.theme = Qt.ColorScheme.Light
+
+
+	def changeEvent(self, event:QEvent):
+		if event.type() == QEvent.Type.ThemeChange:
+			if self.theme == Qt.ColorScheme.Light:
+				self.sidebar.set_dark_mode()
+				self.theme = Qt.ColorScheme.Dark
+			else:
+				self.sidebar.set_light_mode()
+				self.theme = Qt.ColorScheme.Light
+		super().changeEvent(event)
 
 
 
