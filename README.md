@@ -12,10 +12,6 @@ Download the source code.
   ```
   pip install pyside6
   ```
-+ Or PyQt6
-  ```
-  pip install pyqt6
-   ```
 
 ## ⏯️ Running
 
