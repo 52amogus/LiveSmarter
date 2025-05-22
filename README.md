@@ -12,10 +12,6 @@ Download the source code.
   ```
   pip install pyside6
   ```
-+ Or PyQt6
-  ```
-  pip install pyqt6
-   ```
 
 ## ⏯️ Running
 
@@ -36,7 +32,7 @@ pyinstaller --onefile <PATH_TO_MAIN.PY>
 ```
 
 The applicaion is saved to the dist folder and you can run it anytime or share with anyone even if they dont have python installed.
-
+____
 ### From source
 
 run the following:
