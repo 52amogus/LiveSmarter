@@ -32,7 +32,7 @@ pyinstaller --onefile <PATH_TO_MAIN.PY>
 ```
 
 The applicaion is saved to the dist folder and you can run it anytime or share with anyone even if they dont have python installed.
-
+____
 ### From source
 
 run the following:
