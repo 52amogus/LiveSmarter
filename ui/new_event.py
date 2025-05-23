@@ -4,6 +4,7 @@ from data import TITLE_STYLE, SUBTITLE_STYLE, ADD_BUTTON_STYLE, MAIN_BUTTON_STYL
 from model import Event,save_item
 from PySide6.QtWidgets import QSizePolicy,QTimeEdit,QCheckBox,QComboBox,QInputDialog,QSpacerItem,QHBoxLayout,QVBoxLayout,QLabel,QWidget, QLineEdit, QPushButton, QDateTimeEdit, QFormLayout
 from PySide6.QtCore import QTime,Qt
+from localization import word
 
 class NewEventWindow(QWidget):
 	def __init__(self,
@@ -26,17 +27,17 @@ class NewEventWindow(QWidget):
 			self.date_time_edit.setTime(datetime.now().time())
 
 		self.setFixedSize(320,240)
-		self.btn_complete = QPushButton("Создать")
+		self.btn_complete = QPushButton(word("create"))
 		self.choose_tags = QComboBox()
-		self.choose_tags.addItems(["Нет","Новый"])
+		self.choose_tags.addItems([word("no_tags"),word("new_tag")])
 		self.isImportant = QCheckBox()
 
 
 		main_layout = QFormLayout()
 
-		title = QLabel("Новая задача")
+		title = QLabel(word("new_event"))
 		title.setStyleSheet("""
-		font-size:35px;
+		font-size:25px;
 		font-weight:900;
 		""")
 
@@ -47,10 +48,10 @@ class NewEventWindow(QWidget):
 
 		main_layout.addRow(title)
 
-		main_layout.addRow("Название",self.name_enter)
-		main_layout.addRow("Дата и время",self.date_time_edit)
-		main_layout.addRow("Важное",self.isImportant)
-		main_layout.addRow("Теги",self.choose_tags)
+		main_layout.addRow(word("event_name"),self.name_enter)
+		main_layout.addRow(word("event_datetime"),self.date_time_edit)
+		main_layout.addRow(word("event_is_important"),self.isImportant)
+		main_layout.addRow(word("event_tags"),self.choose_tags)
 
 		main_layout.addRow(self.btn_complete)
 

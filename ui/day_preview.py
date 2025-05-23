@@ -4,6 +4,7 @@ from model import load_all
 from datetime import date
 from .eventlist import EventList
 from .new_event import NewEventWindow
+from localization import word
 
 class DayPreview(QWidget):
 	def __init__(self,day:date,separate=False):
@@ -27,7 +28,7 @@ class DayPreview(QWidget):
 		layout = QVBoxLayout()
 		action_bar = QHBoxLayout()
 
-		self.title = QLabel(format_date(day) if separate else "Сегодня")
+		self.title = QLabel(format_date(day) if separate else word("today"))
 
 		if separate:
 			self.resize(700,500)

@@ -10,7 +10,7 @@ from model import get_active_dates, load_all, Event, save_item
 from .eventlist import EventList
 from .datelist import ActiveDatesList
 from .day_preview import DayPreview
-
+from localization import word
 
 def menu_button_size(widgets:list[QWidget]):
 	for element in widgets:
@@ -32,13 +32,13 @@ class Sidebar(QFrame):
 		pm_timetables = QPixmap()
 		pm_timetables.load("icons/timetables.png")
 
-		self.btn_today = QPushButton(" сегодня")
+		self.btn_today = QPushButton(f" {word("today")}")
 		self.btn_today.setIcon(pm_today)
 
-		self.btn_calendar = QPushButton(" календарь")
+		self.btn_calendar = QPushButton(f" {word("calendar")}")
 		self.btn_calendar.setIcon(pm_calendar)
 
-		self.btn_timetables = QPushButton(" расписания")
+		self.btn_timetables = QPushButton(f" {word("timetables")}")
 		self.btn_timetables.setIcon(pm_timetables)
 
 		self.setFixedWidth(200)
@@ -100,7 +100,6 @@ class CalendarWindow(QWidget):
 
 		title_layout.addWidget(self.title)
 		event = QEvent(QEvent.Type.ThemeChange)
-		event.Type
 		title_layout.addWidget(btn_new)
 
 		def open_new():
@@ -135,8 +134,8 @@ class CalendarWindow(QWidget):
 
 		buttons.addWidget(btn_back)
 		buttons.addWidget(btn_next)
-		buttons.addWidget(QLabel("Сортировать по"))
-		buttons.addWidget(select_sort_mode)
+		#buttons.addWidget(QLabel("Сортировать по"))
+		#buttons.addWidget(select_sort_mode)
 
 
 
@@ -144,7 +143,7 @@ class CalendarWindow(QWidget):
 		win_create.btn_complete.clicked.connect(create_new)
 		btn_back.clicked.connect(back)
 		btn_new.clicked.connect(open_new)
-		buttons.addSpacerItem(QSpacerItem(100,0))
+		buttons.addSpacerItem(QSpacerItem(200,0))
 		self.title.setStyleSheet(TITLE_STYLE)
 		data = get_active_dates(self.selected_year, self.selected_month)
 		self.list_dates = ActiveDatesList([(i,WEEKDAYS["RUSSIAN"][(d:=ddate(self.selected_year,self.selected_month,int(i))).weekday()],str(data[i]),d) for i in data])
@@ -213,7 +212,7 @@ class TimetablesWindow(QWidget):
 		layout.addLayout(buttons)
 		self.setLayout(layout)
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
 	def __init__(self,initialTheme):
 		super().__init__()
 		layout = QHBoxLayout()
@@ -222,6 +221,7 @@ class MainWindow(QWidget):
 		today_window = DayPreview(ddate.today())
 		layout.addWidget(today_window)
 
+		widget = QWidget()
 
 		TABS:dict[str,QWidget] = {
 			"today":today_window,
@@ -257,8 +257,9 @@ class MainWindow(QWidget):
 		self.sidebar.btn_today.clicked.connect(set_today)
 		self.sidebar.btn_calendar.clicked.connect(set_calendar)
 		self.sidebar.btn_timetables.clicked.connect(set_timetables)
-		self.setLayout(layout)
+		widget.setLayout(layout)
 		self.theme = initialTheme
+		self.setCentralWidget(widget)
 
 		if self.theme == Qt.ColorScheme.Dark:
 			self.sidebar.set_dark_mode()

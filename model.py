@@ -3,48 +3,60 @@ from functools import partial
 from itertools import repeat
 from os import mkdir, environ, path, listdir, remove,rmdir
 from typing import Any, Self, Callable,Optional
-from mac_notifications import client
+import platform
 import json,time as ptime
 from string import ascii_letters,digits
 from secrets import choice
 from data import format_time
-import threading
+import threading,locale
 
-CURRENT_FORMAT_VERSION = "1.3"
+CURRENT_FORMAT_VERSION = "1.2"
 
-def format_1_2(data:dict):
-	data["notificationId"] = client.create_notification().uid
-	return data
 
-FORMATTERS:dict[str,Callable[[dict],dict]] = {
-	"1.2":format_1_2
+FORMATTERS:dict[str,Callable[[dict],dict]] = {}
+
+DEFAULT_SETTINGS = {
+	"language":locale.getlocale()[0]
 }
+
 
 class EventDecoderError(Exception):...
 
+user_os = platform.platform()
 
-def remind_later(title:str,time:str):
-	client.create_notification(
-		title=f"{title}(повтор)",
-		subtitle=time,delay=timedelta(minutes=5))
+if user_os[:5] == "macOS":
+	from mac_notifications import client
+	def remind_later(title:str,time:str):
+		client.create_notification(
+			title=f"{title}(повтор)",
+			subtitle=time,delay=timedelta(minutes=5))
 
-def notificationListener(signal:threading.Event):
-	today = ddate.today()
-	upcoming = load_all(today)
-	while not signal.is_set():
-		for event in upcoming:
-			current_time = datetime.now().time()
-			if current_time >= event.time:
-				notification_title = event.name
-				notification_subtitle = format_time(event.time)
-				client.create_notification(title=notification_title,
-										   subtitle=notification_subtitle,
-										   action_button_str="Напомнить через 5 мин.",
-										   action_callback=partial(remind_later,notification_title,notification_subtitle))
-				delete(today,event.id)
+	def notificationListener(signal:threading.Event):
+		today = ddate.today()
 		upcoming = load_all(today)
-		ptime.sleep(2)
-	client.stop_listening_for_callbacks()
+		while not signal.is_set():
+			for event in upcoming:
+				current_time = datetime.now().time()
+				if current_time >= event.time:
+					notification_title = event.name
+					notification_subtitle = format_time(event.time)
+					client.create_notification(title=notification_title,
+											   subtitle=notification_subtitle,
+											   action_button_str="Напомнить через 5 мин.",
+											   action_callback=partial(remind_later,notification_title,notification_subtitle))
+					delete(today,event.id)
+			upcoming = load_all(today)
+			ptime.sleep(2)
+		client.stop_listening_for_callbacks()
+
+
+	app_path = f"{environ.get("HOME")}/Library/Application Support/live-smarter"
+
+	dir_path = path.join(app_path, "db")
+
+	timetables_path = path.join(dir_path, "timetables")
+else:
+	print(platform.platform())
 
 def UUID() -> str:
 	ids = get_uuids()
@@ -112,12 +124,7 @@ class Event:
 				"completed":self.completed,
 				}
 
-app_path = f"{environ.get("HOME")}/Library/Application Support/live-smarter"
 
-
-dir_path = path.join(app_path,"db")
-
-timetables_path = path.join(dir_path,"timetables")
 
 
 def get_uuids() -> list[str]:
@@ -126,14 +133,18 @@ def get_uuids() -> list[str]:
 	return ids
 
 
+
 def setup_directory():
 	if not path.exists(dir_path):
 		print("Setting up the directory!")
 		mkdir(app_path)
 		mkdir(dir_path)
-		with open(path.join(app_path,"local_uuids.txt"),"w") as file:
-			file.write("")
+		with open(path.join(app_path,"local_uuids.txt"),"w") as l_uuids:
+			l_uuids.write("")
+		with open(path.join(app_path, "settings.json"), "w") as settings_file:
+			json.dump(DEFAULT_SETTINGS,settings_file)
 
+setup_directory()
 
 def create_date_path(date:ddate):
 	return path.join(str(date.year),str(date.month),str(date.day))
@@ -211,4 +222,8 @@ def get_active_dates(year:int,month:int):
 	return results
 
 
-setup_directory()
+with open(path.join(app_path,"settings.json")) as file:
+	settings = json.load(file)
+
+def get_setting(key:str):
+	return settings[key]
