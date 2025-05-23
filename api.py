@@ -4,7 +4,6 @@ from datetime import date,time
 from typing import Optional, override
 from model import Event
 
-print(1)
 class ServerConfig:
 	address = '5.129.201.198'
 	port = 5050
