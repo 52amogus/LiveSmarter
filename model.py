@@ -225,8 +225,13 @@ def get_active_dates(year:int,month:int):
 	return results
 
 
-with open(path.join(app_path,"settings.json")) as file:
-	settings = json.load(file)
+with open(path.join(app_path,"settings.json")) as rfile:
+	settings = json.load(rfile)
 
 def get_setting(key:str):
 	return settings[key]
+
+def set_setting(key:str,value):
+	settings[key] = value
+	with open(path.join(app_path, "settings.json"),"w") as wfile:
+		json.dump(settings,wfile)

@@ -62,6 +62,8 @@ class NewEventWindow(QWidget):
 		if text == "":
 			text = "Без названия"
 		item = Event(text, self.date_time_edit.time().toPython(),self.isImportant.isChecked(),uuid=UUID())
+		if save_date is None:
+			save_date = self.date_time_edit.date().toPython()
 		save_item(
 			save_date,
 			item)

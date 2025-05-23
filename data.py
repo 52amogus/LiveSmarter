@@ -1,47 +1,5 @@
 from datetime import date,time as dtime
-
-MONTHS = {
-	"RUSSIAN":
-		["Январь",
-		 "Февраль",
-		 "Март",
-		 "Апрель",
-		 "Май",
-		 "Июнь",
-		 "Июль",
-		 "Август",
-		 "Сентябрь",
-		 "Октябрь",
-		 "Ноябрь",
-		 "Декабрь"],
-	"RUSSIAN-2":[
-		"Января",
-		"Февраля",
-		"Марта",
-		"Апреля",
-		"Мая",
-		"Июня",
-		"Июля",
-		"Августа",
-		"Сентября",
-		"Октября",
-		"Ноября",
-		"Декабря",
-	],
-	"DEFAULT":None
-}
-
-WEEKDAYS = {
-	"RUSSIAN":[
-		"Понедельник",
-		"Вторник",
-		"Среда",
-		"Четверг",
-		"Пятница",
-		"Суббота",
-		"Воскресенье",
-	]
-}
+#from localization import word
 
 SIDEBAR_BUTTON_STYLE = """
 font-size:15px;
@@ -72,8 +30,6 @@ font-weight:600;
 def format_component(component:int):
 	return f"{component if component > 9 else f"0{component}"}"
 
-def format_date(date1:date):
-	return f"{date1.day} {MONTHS["RUSSIAN-2"][date1.month-1]} {date1.year}г."
 
 def format_time(time:dtime):
 	return f"{time.hour}:{format_component(time.minute)}"

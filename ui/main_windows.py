@@ -1,7 +1,7 @@
 from typing import override
 from datetime import date as ddate
-from PySide6.QtWidgets import QApplication,QMenu,QMainWindow,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
-from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication,QMenu,QMenuBar,QMainWindow,QListWidget,QComboBox,QMessageBox,QFrame,QSpacerItem,QWidget,QHBoxLayout,QVBoxLayout,QPushButton,QSizePolicy,QLabel,QTabWidget
+from PySide6.QtGui import QPixmap,QAction
 from PySide6.QtCore import QEvent,Qt,Signal
 import model
 from data import *
@@ -11,6 +11,8 @@ from .eventlist import EventList
 from .datelist import ActiveDatesList
 from .day_preview import DayPreview
 from localization import word
+from .settings import SettingsWindow
+import webbrowser
 
 def menu_button_size(widgets:list[QWidget]):
 	for element in widgets:
@@ -82,7 +84,7 @@ class CalendarWindow(QWidget):
 		self.selected_year:int = ddate.today().year
 		self.selected_month:int = ddate.today().month
 		title_layout = QHBoxLayout()
-		self.title = QLabel(f"{MONTHS["RUSSIAN"][self.selected_month-1]} {self.selected_year} г.")
+		self.title = QLabel(f"{word("months")[self.selected_month-1]} {self.selected_year}")
 		buttons = QHBoxLayout()
 		btn_next = QPushButton(">")
 		btn_back = QPushButton("<")
@@ -92,7 +94,7 @@ class CalendarWindow(QWidget):
 		select_sort_mode = QComboBox()
 		select_sort_mode.addItems(["дате","количеству задач"])
 
-		win_create = NewEventWindow(
+		self.win_create = NewEventWindow(
 			requires_full_datetime=True,
 			default_year=self.selected_year,
 			default_month=self.selected_month
@@ -102,15 +104,8 @@ class CalendarWindow(QWidget):
 		event = QEvent(QEvent.Type.ThemeChange)
 		title_layout.addWidget(btn_new)
 
-		def open_new():
-			win_create.show()
-
-		def create_new():
-			win_create.create_new()
-			update_dates()
-
 		def update_title():
-			self.title.setText(f"{MONTHS["RUSSIAN"][self.selected_month-1]} {self.selected_year} г.")
+			self.title.setText(f"{word("months")[self.selected_month-1]} {self.selected_year}")
 
 		def next_month():
 			if self.selected_month < 12:
@@ -119,8 +114,8 @@ class CalendarWindow(QWidget):
 				self.selected_month = 1
 				self.selected_year+=1
 			update_title()
-			update_dates()
-			win_create.setDefault(self.selected_year,self.selected_month)
+			self.update_dates()
+			self.win_create.setDefault(self.selected_year,self.selected_month)
 		def back():
 			if self.selected_month > 1:
 				self.selected_month -= 1
@@ -128,8 +123,8 @@ class CalendarWindow(QWidget):
 				self.selected_month = 12
 				self.selected_year -= 1
 			update_title()
-			update_dates()
-			win_create.setDefault(self.selected_year, self.selected_month)
+			self.update_dates()
+			self.win_create.setDefault(self.selected_year, self.selected_month)
 
 
 		buttons.addWidget(btn_back)
@@ -140,20 +135,59 @@ class CalendarWindow(QWidget):
 
 
 		btn_next.clicked.connect(next_month)
-		win_create.btn_complete.clicked.connect(create_new)
+		self.win_create.btn_complete.clicked.connect(self.create_new)
 		btn_back.clicked.connect(back)
-		btn_new.clicked.connect(open_new)
+		btn_new.clicked.connect(self.open_new)
 		buttons.addSpacerItem(QSpacerItem(200,0))
 		self.title.setStyleSheet(TITLE_STYLE)
 		data = get_active_dates(self.selected_year, self.selected_month)
-		self.list_dates = ActiveDatesList([(i,WEEKDAYS["RUSSIAN"][(d:=ddate(self.selected_year,self.selected_month,int(i))).weekday()],str(data[i]),d) for i in data])
-		def update_dates():
-			data2 = get_active_dates(self.selected_year,self.selected_month)
-			print(self.selected_year,self.selected_month)
-			self.list_dates.reset_data([(i,WEEKDAYS["RUSSIAN"][(d:=ddate(self.selected_year,self.selected_month,int(i))).weekday()],str(data2[i]),d) for i in data2])
+		self.list_dates = ActiveDatesList([(i,word("weekdays")[(d:=ddate(self.selected_year,self.selected_month,int(i))).weekday()],str(data[i]),d) for i in data])
 		layout.addLayout(title_layout)
 		layout.addWidget(self.list_dates)
 		layout.addLayout(buttons)
+
+		self.setLayout(layout)
+
+	def update_dates(self):
+		data2 = get_active_dates(self.selected_year, self.selected_month)
+		print(self.selected_year, self.selected_month)
+		self.list_dates.reset_data([(i, word("weekdays")[
+			(d := ddate(self.selected_year, self.selected_month, int(i))).weekday()], str(data2[i]), d) for i in data2])
+
+	def open_new(self):
+		self.win_create.show()
+
+	def create_new(self):
+		self.win_create.create_new()
+		self.update_dates()
+
+class AboutWindow(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		layout = QVBoxLayout()
+
+		icon = QPixmap()
+		icon.load("icons/icon_small.png")
+
+		lb_icon = QLabel()
+		lb_icon.setPixmap(icon)
+
+		def open_github():
+			webbrowser.open("https://github.com/52amogus/LiveSmarter")
+
+		title = QLabel("LiveSmarter")
+		title.setStyleSheet(SUBTITLE_STYLE)
+
+		contribute = QPushButton("GitHub")
+		contribute.clicked.connect(open_github)
+
+		layout.addWidget(lb_icon)
+		layout.addWidget(title)
+		layout.addWidget(contribute)
+
+		self.setFixedSize(230,300)
+
 
 		self.setLayout(layout)
 
@@ -186,7 +220,7 @@ class TimetablesWindow(QWidget):
 		self.event_list = EventList(model.get_timetable(self.selected_weekday),self.selected_weekday)
 
 		def update():
-			self.title.setText(WEEKDAYS["RUSSIAN"][self.selected_weekday-1])
+			self.title.setText(word("weekdays")[self.selected_weekday-1])
 			self.event_list.reset_data(model.get_timetable(self.selected_weekday),self.selected_weekday,isTimetable=True)
 
 		update()
@@ -220,14 +254,30 @@ class MainWindow(QMainWindow):
 		layout.addWidget(self.sidebar)
 		today_window = DayPreview(ddate.today())
 		layout.addWidget(today_window)
+		TABS: dict[str, QWidget] = {
+			"today": today_window,
+			"calendar": CalendarWindow(),
+			"timetables": TimetablesWindow(),
+		}
+
+		mb = self.menuBar()
+		main_menu = QMenu(word("mb_event"))
+		new_action = QAction(word("mb_new"), self)
+		settings_action = QAction("settings",self)
+		about_action = QAction("about",self)
+
+		new_action.triggered.connect(TABS["calendar"].open_new)
+		settings_action.triggered.connect(self.open_settings)
+		about_action.triggered.connect(self.about)
+
+		main_menu.addAction(new_action)
+		main_menu.addAction(settings_action)
+		main_menu.addAction(about_action)
+		mb.addMenu(main_menu)
 
 		widget = QWidget()
 
-		TABS:dict[str,QWidget] = {
-			"today":today_window,
-			"calendar":CalendarWindow(),
-			"timetables":TimetablesWindow(),
-		}
+
 
 
 		def set_tab(tab:str):
@@ -257,6 +307,8 @@ class MainWindow(QMainWindow):
 		self.sidebar.btn_today.clicked.connect(set_today)
 		self.sidebar.btn_calendar.clicked.connect(set_calendar)
 		self.sidebar.btn_timetables.clicked.connect(set_timetables)
+		self.settings_window = SettingsWindow()
+		self.about_window = AboutWindow()
 		widget.setLayout(layout)
 		self.theme = initialTheme
 		self.setCentralWidget(widget)
@@ -277,8 +329,14 @@ class MainWindow(QMainWindow):
 			else:
 				self.sidebar.set_light_mode()
 				self.theme = Qt.ColorScheme.Light
+		event.accept()
 		super().changeEvent(event)
 
+	def about(self):
+		self.about_window.show()
+
+	def open_settings(self):
+		self.settings_window.show()
 
 
 

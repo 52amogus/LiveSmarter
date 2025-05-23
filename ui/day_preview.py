@@ -6,6 +6,10 @@ from .eventlist import EventList
 from .new_event import NewEventWindow
 from localization import word
 
+
+def format_date(date1: date):
+	return f"{date1.day} {word("months2")[date1.month - 1]} {date1.year}"
+
 class DayPreview(QWidget):
 	def __init__(self,day:date,separate=False):
 		super().__init__()
@@ -27,6 +31,7 @@ class DayPreview(QWidget):
 
 		layout = QVBoxLayout()
 		action_bar = QHBoxLayout()
+
 
 		self.title = QLabel(format_date(day) if separate else word("today"))
 
