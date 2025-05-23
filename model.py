@@ -55,8 +55,11 @@ if user_os[:5] == "macOS":
 	dir_path = path.join(app_path, "db")
 
 	timetables_path = path.join(dir_path, "timetables")
-else:
-	print(platform.platform())
+elif user_os[:7] == "Windows":
+	app_path = f"{environ.get("APPDATA")}/live-smarter"
+	dir_path = path.join(app_path, "db")
+	timetables_path = path.join(dir_path, "timetables")
+
 
 def UUID() -> str:
 	ids = get_uuids()
