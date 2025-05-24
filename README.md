@@ -1,4 +1,4 @@
-# A simple planning app
+# Simple reminders
 
 **Note: Notifications work on mac os only, winows support is coming soon**
 
@@ -19,11 +19,10 @@ Download the source code.
   pip install macos-notifications
   ```
 
-## ⏯️ Running
 
-### Using pyinstaller
+## Building into an executable
 
-The most convenient way to run the app is to build into an executable using pyinstaller.
+To share the application or run it easier, you might have to build it into an executable
 
 To install pyinstaller run the following command:
 
@@ -38,14 +37,12 @@ pyinstaller --onefile <PATH_TO_MAIN.PY>
 ```
 
 The applicaion is saved to the dist folder and you can run it anytime or share with anyone even if they dont have python installed.
-____
-### From source
 
-run the following:
-
-```python <PATH TO MAIN.PY>```
 
 ## Usage
+The app supports thse languages:
++ English
++ Русский
 
 
 
