@@ -1,5 +1,7 @@
 # Simple reminders
 
+<image src="/icons/icon.png" alt="Описание изображения">
+
 **Note: Notifications work on mac os only, winows support is coming soon**
 
 ## ⬇️ Installation
@@ -20,29 +22,49 @@ Download the source code.
   ```
 
 
-## Building into an executable
+## Packaging into an executable file
 
 To share the application or run it easier, you might have to build it into an executable
 
-To install pyinstaller run the following command:
++ ### Using pyinstaller(all platforms)
 
-```
-pip install pyinstaller
-```
+  To install pyinstaller run the following command:
 
-To build your application:
+  ```
+  pip install pyinstaller
+  ```
 
-```
-pyinstaller --onefile <PATH_TO_MAIN.PY>
-```
+  To build your application:
 
-The applicaion is saved to the dist folder and you can run it anytime or share with anyone even if they dont have python installed.
+  ```
+  pyinstaller --onefile <PATH_TO_MAIN.PY>
+  ```
 
+  The applicaion and you can run it anytime or share with anyone even if they dont have python installed.
+
++ ### Using py2app(mac os only)
+
+  To install py2app, run the following:
+
+  ```
+  pip install py2app
+  ```
+  Make sure to run "run_before_setup.py" before starting
+
+  Make sure pagkage "setuptools" is of version 70.3.0 or older, The newer version don`t work with py2app
+
+  Run the following command:
+
+  ```
+  python setup.py py2app
+  ```
 
 ## Usage
 The app supports thse languages:
 + English
 + Русский
+
+
 
 
 
