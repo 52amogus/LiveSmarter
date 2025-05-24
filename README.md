@@ -1,6 +1,6 @@
 # Simple reminders
 
-<image src="/icons/icon.png" alt="Описание изображения">
+
 
 **Note: Notifications work on mac os only, winows support is coming soon**
 
