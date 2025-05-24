@@ -1,12 +1,9 @@
 from datetime import time as dtime,date as ddate,timedelta,datetime
 from functools import partial
-from itertools import repeat
 from os import mkdir, environ, path, listdir, remove,rmdir
 from typing import Any, Self, Callable,Optional
 import platform
 import json,time as ptime
-from string import ascii_letters,digits
-from secrets import choice
 from data import format_time
 import threading,locale
 from uuid import uuid1
