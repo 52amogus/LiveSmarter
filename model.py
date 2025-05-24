@@ -9,6 +9,8 @@ from string import ascii_letters,digits
 from secrets import choice
 from data import format_time
 import threading,locale
+from uuid import uuid1
+
 
 CURRENT_FORMAT_VERSION = "1.2"
 
@@ -61,7 +63,7 @@ elif user_os[:7] == "Windows":
 	timetables_path = path.join(dir_path, "timetables")
 
 
-def UUID() -> str:
+"""def UUID() -> str:
 	ids = get_uuids()
 	result = "".join([
 		choice(ascii_letters+digits)
@@ -74,7 +76,7 @@ def UUID() -> str:
 		])
 	with open(path.join(app_path,"local_uuids.txt"),"a") as file:
 		file.write(f"\n{result}")
-	return result
+	return result"""
 
 class Event:
 	"""
@@ -84,7 +86,7 @@ class Event:
 				 name:str,
 				 time:dtime,
 				 isImportant:bool,
-				 uuid:str,
+				 uuid:str = str(uuid1()),
 				 completed:bool=False,
 				 ):
 		"""
@@ -116,7 +118,7 @@ class Event:
 				raise EventDecoderError(f"\nevent version is alright, but the contents are corrupted\n{e}!")
 		else:
 			if event_version in FORMATTERS:
-				return cls.decode(FORMATTERS[event_version](data),UUID())
+				return cls.decode(FORMATTERS[event_version](data),str(uuid1()))
 			else:
 				raise EventDecoderError(f"\nCannot decode event of version {event_version}!")
 
