@@ -91,8 +91,8 @@ def add_localization():
 def save_localization():
 	filename = QFileDialog().getSaveFileName()
 	if filename[0] != "":
-		with open(f"{filename[0]}.json","w") as file:
-			json.dump(result,file,ensure_ascii=False)
+		with open(f"{filename[0]}.json","w",encoding="us-ascii") as file:
+			json.dump(result,file)
 		app.quit()
 
 main_layout = QVBoxLayout()

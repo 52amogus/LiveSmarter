@@ -176,7 +176,7 @@ class AboutWindow(QWidget):
 		def open_github():
 			webbrowser.open("https://github.com/52amogus/LiveSmarter")
 
-		title = QLabel("LiveSmarter")
+		title = QLabel("О приложении")
 		title.setStyleSheet(SUBTITLE_STYLE)
 
 		contribute = QPushButton("GitHub")

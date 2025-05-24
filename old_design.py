@@ -1,13 +1,9 @@
 from data import MONTHS, WEEKDAYS
-from editor import NewEventWindow
-from model import Event
-from task_list import EventList
+from ui.new_event import NewEventWindow
+from ui.eventlist import EventList
 from datetime import date,time
 
 if __name__ == "__main__":
-	from datetime import timedelta
-	from mac_notifications import client
-	from PySide6 import Qt
 	import model
 	from sys import argv
 	from PySide6.QtWidgets import QLabel, QWidget, QApplication, QPushButton, QVBoxLayout, QListWidget, QHBoxLayout,QTabBar
@@ -79,8 +75,7 @@ if __name__ == "__main__":
 		win_add.show()
 
 	def new_event():
-		event = win_add.get_result()
-		model.save_item(event[0],model.Event.decode(event[1]))
+		win_add.create_new()
 		update_dates(selected_year,selected_month)
 
 	def open_day():

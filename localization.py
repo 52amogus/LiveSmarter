@@ -51,13 +51,15 @@ base = {
 		"load_lang":"search"
 }
 
+
+
 try:
 	if current_locale == "en_US":
 		wordlist = base
 	else:
 		with open(path.join("localization",f"{current_locale}.json")) as file:
 			wordlist = json.load(file)
-except FileNotFoundError:
+except (FileNotFoundError,UnicodeError):
 	wordlist = base
 
 def word(key:str):
