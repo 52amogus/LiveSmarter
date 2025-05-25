@@ -1,12 +1,22 @@
 from PySide6.QtWidgets import QFrame,QHBoxLayout,QListWidgetItem,QVBoxLayout,QLabel,QCheckBox,QListWidget
+from PySide6.QtGui import QPixmap,QIcon
 from model import Event,save_to_timetable,save_item
 from datetime import date as ddate
 from data import *
 
 
+
 class EventRow(QFrame):
 	def __init__(self,item:Event,item_date:ddate|int,isTimetable):
 		super().__init__()
+
+		icon_repeating = QPixmap()
+		icon_repeating.load(r"icons/timetables.png")
+		icon_repeating = icon_repeating.scaled(20,20)
+
+		lb_repeating = QLabel()
+		lb_repeating.setPixmap(icon_repeating)
+		lb_repeating.setFixedSize(20,20)
 
 		self.date = item_date
 
@@ -14,8 +24,15 @@ class EventRow(QFrame):
 		lay = QVBoxLayout()
 		lay.setSpacing(0)
 
+		name_layout = QHBoxLayout()
 		name_label = QLabel(item.name)
-		lay.addWidget(name_label)
+
+
+		name_layout.addWidget(name_label)
+		if item.is_repeating_event:
+			name_layout.addWidget(lb_repeating)
+
+		lay.addLayout(name_layout)
 
 		time_label = QLabel(
 			f"{item.time.hour} : {item.time.minute if item.time.minute > 9 else f"0{item.time.minute}"}"
