@@ -1,6 +1,5 @@
-from PySide6.QtWidgets import QApplication,QMenu,QMenuBar,QSystemTrayIcon,QLabel
-from PySide6.QtGui import QPixmap,QImage,QAction,QActionGroup
-from PySide6.QtCore import Qt,QPoint
+from PySide6.QtWidgets import QApplication,QSystemTrayIcon,QLabel
+from PySide6.QtGui import QPixmap
 from ui.main_windows import MainWindow
 import model,platform
 from threading import Thread, Event
