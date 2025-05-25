@@ -61,7 +61,7 @@ class EventList(QListWidget):
 		self.clear()
 		for item in new:
 			self.add_item(item,items_date,isTimetable)
-	def add_item(self,item:Event,item_date:ddate,isTimetable):
+	def add_item(self,item:Event,item_date:ddate|int,isTimetable):
 		list_item = QListWidgetItem(self)
 		widget_item = EventRow(item,item_date,isTimetable)
 		self.addItem(list_item)

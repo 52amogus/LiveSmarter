@@ -30,11 +30,11 @@ if __name__ == "__main__":
 
 
 
-	if platform.platform()[:5] == "macOS":
+	"""if platform.platform()[:5] == "macOS":
 		listener = Thread(target=model.notificationListener,args=[signal])
 
 
-		listener.start()
+		listener.start()"""
 
 	app.exec()
 

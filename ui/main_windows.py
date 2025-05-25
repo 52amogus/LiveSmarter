@@ -214,8 +214,9 @@ class TimetablesWindow(QWidget):
 		self.win_create = NewEventWindow()
 
 		def add():
-			self.win_create.create_new()
-
+			item = self.win_create.create_new(isTimetable=True,weekday=self.selected_weekday)
+			if item is not None:
+				self.event_list.add_item(item,self.selected_weekday,isTimetable=True)
 		self.event_list = EventList(model.get_timetable(self.selected_weekday),self.selected_weekday)
 
 		def update():
@@ -239,6 +240,8 @@ class TimetablesWindow(QWidget):
 
 		btn_next.clicked.connect(next_weekday)
 		btn_back.clicked.connect(previous_weekday)
+		btn_new.clicked.connect(self.win_create.show)
+		self.win_create.btn_complete.clicked.connect(add)
 		layout.addLayout(title_layout)
 		layout.addWidget(self.event_list)
 		layout.addLayout(buttons)
