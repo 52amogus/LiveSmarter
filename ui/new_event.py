@@ -1,6 +1,6 @@
 from datetime import datetime,date
 from data import TITLE_STYLE, SUBTITLE_STYLE, ADD_BUTTON_STYLE, MAIN_BUTTON_STYLE
-from model import Event,save_item
+from model import Event,save_item,save_to_timetable
 from PySide6.QtWidgets import QSizePolicy,QTimeEdit,QCheckBox,QComboBox,QInputDialog,QSpacerItem,QHBoxLayout,QVBoxLayout,QLabel,QWidget, QLineEdit, QPushButton, QDateTimeEdit, QFormLayout
 from PySide6.QtCore import QTime,Qt
 from localization import word
@@ -56,16 +56,21 @@ class NewEventWindow(QWidget):
 
 		self.setLayout(main_layout)
 
-	def create_new(self,save_date:date=None) -> Event|tuple[date,Event]:
+	def create_new(self,save_date:date=None,isTimetable:bool=False,weekday:int=None) -> Event|tuple[object,Event]:
 		text = self.name_enter.text()
 		if text == "":
 			text = "Без названия"
 		item = Event(text, self.date_time_edit.time().toPython(),self.isImportant.isChecked())
-		if save_date is None:
-			save_date = self.date_time_edit.date().toPython()
-		save_item(
-			save_date,
-			item)
+		if isTimetable:
+			save_to_timetable(weekday,item)
+		else:
+			if save_date is None:
+				save_date = self.date_time_edit.date().toPython()
+			save_item(
+				save_date,
+				item)
+
+
 		self.close()
 		if self.requires_date:
 			return self.date_time_edit.date().toPython(),item

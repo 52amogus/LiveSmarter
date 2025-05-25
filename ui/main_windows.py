@@ -114,7 +114,7 @@ class CalendarWindow(QWidget):
 				self.selected_month = 1
 				self.selected_year+=1
 			update_title()
-			self.update_dates()
+			self.update()
 			self.win_create.setDefault(self.selected_year,self.selected_month)
 		def back():
 			if self.selected_month > 1:
@@ -123,7 +123,7 @@ class CalendarWindow(QWidget):
 				self.selected_month = 12
 				self.selected_year -= 1
 			update_title()
-			self.update_dates()
+			self.update()
 			self.win_create.setDefault(self.selected_year, self.selected_month)
 
 
@@ -146,10 +146,7 @@ class CalendarWindow(QWidget):
 		self.setLayout(layout)
 
 	def update(self):
-		data2 = get_active_dates(self.selected_year, self.selected_month)
-		print(self.selected_year, self.selected_month)
-		self.list_dates.reset_data([(i, word("weekdays")[
-			(d := ddate(self.selected_year, self.selected_month, int(i))).weekday()], str(data2[i]), d) for i in data2])
+		self.list_dates.reset_data([date(self.selected_year,self.selected_month,int(i)) for i in get_active_dates(self.selected_year,self.selected_month)])
 
 	def open_new(self):
 		self.win_create.show()
@@ -214,12 +211,16 @@ class TimetablesWindow(QWidget):
 		buttons.addWidget(btn_next)
 		buttons.addSpacerItem(QSpacerItem(200, 0))
 
+		self.win_create = NewEventWindow()
+
+		def add():
+			self.win_create.create_new()
+
 		self.event_list = EventList(model.get_timetable(self.selected_weekday),self.selected_weekday)
 
 		def update():
 			self.title.setText(word("weekdays")[self.selected_weekday-1])
 			self.event_list.reset_data(model.get_timetable(self.selected_weekday),self.selected_weekday,isTimetable=True)
-
 		update()
 
 		def next_weekday():
@@ -279,7 +280,12 @@ class MainWindow(QMainWindow):
 
 		def set_tab(tab:str):
 			layout.itemAt(1).widget().setParent(None)
-			layout.addWidget(TABS[tab])
+			new_tab = TABS[tab]
+			try:
+				new_tab.update()
+			except AttributeError:
+				pass
+			layout.addWidget(new_tab)
 
 		def set_today():
 			set_tab("today")
