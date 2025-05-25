@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication,QSystemTrayIcon,QLabel
+from PySide6.QtWidgets import QApplication,QSystemTrayIcon
 from PySide6.QtGui import QPixmap
 from ui.main_windows import MainWindow
 import model,platform
