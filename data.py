@@ -59,6 +59,15 @@ font-weight:900;
 color:white;
 """
 
+LIST_LAYER2_STYLE = """
+background-color:#8BC3FF;
+border-radius:10;
+font-size:20px;
+font-weight:600;
+padding-left:10;
+color:white;
+"""
+
 MAIN_BUTTON_STYLE = """
 background-color:#3B9AFF;
 color:white;

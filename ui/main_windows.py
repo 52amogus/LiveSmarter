@@ -131,9 +131,6 @@ class CalendarWindow(QWidget):
 		buttons.addWidget(btn_next)
 		#buttons.addWidget(QLabel("Сортировать по"))
 		#buttons.addWidget(select_sort_mode)
-
-
-
 		btn_next.clicked.connect(next_month)
 		self.win_create.btn_complete.clicked.connect(self.create_new)
 		btn_back.clicked.connect(back)
@@ -141,14 +138,14 @@ class CalendarWindow(QWidget):
 		buttons.addSpacerItem(QSpacerItem(200,0))
 		self.title.setStyleSheet(TITLE_STYLE)
 		data = get_active_dates(self.selected_year, self.selected_month)
-		self.list_dates = ActiveDatesList([(i,word("weekdays")[(d:=ddate(self.selected_year,self.selected_month,int(i))).weekday()],str(data[i]),d) for i in data])
+		self.list_dates = ActiveDatesList([date(self.selected_year,self.selected_month,int(i)) for i in get_active_dates(self.selected_year,self.selected_month)])
 		layout.addLayout(title_layout)
 		layout.addWidget(self.list_dates)
 		layout.addLayout(buttons)
 
 		self.setLayout(layout)
 
-	def update_dates(self):
+	def update(self):
 		data2 = get_active_dates(self.selected_year, self.selected_month)
 		print(self.selected_year, self.selected_month)
 		self.list_dates.reset_data([(i, word("weekdays")[
@@ -159,7 +156,7 @@ class CalendarWindow(QWidget):
 
 	def create_new(self):
 		self.win_create.create_new()
-		self.update_dates()
+		self.update()
 
 class AboutWindow(QWidget):
 	def __init__(self):
