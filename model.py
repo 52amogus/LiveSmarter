@@ -36,7 +36,6 @@ if user_os[:5] == "macOS":
 		while not signal.is_set():
 			for event in upcoming:
 				if not event.notificationSent:
-					print(event.is_repeating_event)
 					current_time = datetime.now().time()
 					if current_time >= event.time:
 						notification_title = event.name
@@ -176,10 +175,8 @@ def add_overrides_timetable(date:ddate,timetable_id:str,new:Event):
 def get_overrides_timetable(date:ddate):
 	date_path = create_date_path(date)
 	local_timetable_path = path.join(dir_path,date_path, "overrides_timetables")
-	print("L",local_timetable_path)
 	if path.exists(local_timetable_path):
 		all_items_ids = listdir(local_timetable_path)
-		print("A",all_items_ids)
 
 		all_items = []
 
@@ -192,7 +189,6 @@ def get_overrides_timetable(date:ddate):
 				all_items.append(Event.decode(result,timetable_id))
 
 		return all_items
-	print("B")
 	return []
 
 setup_directory()
@@ -232,7 +228,6 @@ def delete_repeating(date,uuid):
 
 
 def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
-	print("Load all called")
 	if not timetable:
 		load_dir_path = create_date_path(date)
 	else:
@@ -246,7 +241,6 @@ def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
 	all_items = []
 	for name in all_item_names:
 		try:
-			print(name)
 			with open(path.join(dir_path,load_dir_path,name)) as file:
 				all_items.append(
 					Event.decode(json.load(file),name)
@@ -274,7 +268,6 @@ def save_item(date:ddate,item:Event):
 		with open(path.join(p3,item.id),"w") as file:
 			json.dump(item.save(),file)
 	else:
-		print("!")
 		add_overrides_timetable(date,item.id,item)
 
 
@@ -301,7 +294,6 @@ def get_timetable_for_date(date:ddate):
 	timetable = id_map(get_timetable(date.weekday()+1))
 	modifications = id_map(get_overrides_timetable(date))
 
-	print(modifications)
 
 	complete = []
 
