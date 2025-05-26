@@ -51,6 +51,14 @@ font-weight:600;
 color:white;
 """
 
+UNDEFINED_ROW_STYLE = """
+background-color:#9D9D9D;
+border-radius:10;
+font-size:20px;
+font-weight:600;
+color:white;
+"""
+
 IMPORTANT_ROW_STYLE = """
 background-color:#FF4C4C;
 border-radius:10;

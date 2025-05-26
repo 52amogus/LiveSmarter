@@ -61,7 +61,10 @@ class EventRow(QFrame):
 
 		self.setLayout(main_lay)
 		self.setObjectName("eventFrame")
-		self.setStyleSheet(IMPORTANT_ROW_STYLE if item.isImportant else LIST_ROW_STYLE)
+		if item.notificationSent:
+			self.setStyleSheet(UNDEFINED_ROW_STYLE)
+		else:
+			self.setStyleSheet(IMPORTANT_ROW_STYLE if item.isImportant else LIST_ROW_STYLE)
 
 
 

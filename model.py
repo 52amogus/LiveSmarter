@@ -9,7 +9,7 @@ import threading,locale
 from uuid import uuid1
 
 
-CURRENT_FORMAT_VERSION = "1.2"
+CURRENT_FORMAT_VERSION = "1.4"
 
 
 FORMATTERS:dict[str,Callable[[dict],dict]] = {}
@@ -35,15 +35,18 @@ if user_os[:5] == "macOS":
 		upcoming = load_all(today)
 		while not signal.is_set():
 			for event in upcoming:
-				current_time = datetime.now().time()
-				if current_time >= event.time:
-					notification_title = event.name
-					notification_subtitle = format_time(event.time)
-					client.create_notification(title=notification_title,
-											   subtitle=notification_subtitle,
-											   action_button_str="Напомнить через 5 мин.",
-											   action_callback=partial(remind_later,notification_title,notification_subtitle))
-					delete(today,event.id)
+				if not event.notificationSent:
+					print(event.is_repeating_event)
+					current_time = datetime.now().time()
+					if current_time >= event.time:
+						notification_title = event.name
+						notification_subtitle = format_time(event.time)
+						client.create_notification(title=notification_title,
+												   subtitle=notification_subtitle,
+												   action_button_str="Напомнить через 5 мин.",
+												   action_callback=partial(remind_later,notification_title,notification_subtitle))
+						event.notificationSent = True
+						save_item(today,event)
 			upcoming = load_all(today)
 			ptime.sleep(2)
 		client.stop_listening_for_callbacks()
@@ -85,7 +88,8 @@ class Event:
 				 isImportant:bool,
 				 uuid:str = str(uuid1()),
 				 completed:bool=False,
-				 is_repeating_event:bool=None
+				 is_repeating_event:bool=None,
+				 notificationSent:bool=False
 				 ):
 		"""
 		Create an event
@@ -100,6 +104,7 @@ class Event:
 		self.completed = completed
 		self.version = CURRENT_FORMAT_VERSION
 		self.id = uuid
+		self.notificationSent = notificationSent
 
 	def __hash__(self):
 		return self.id
@@ -114,7 +119,8 @@ class Event:
 							 data["isImportant"],
 							 uuid,
 							 data["completed"],
-							 is_repeating_event=data.get("is_repeating_event")
+							 is_repeating_event=data.get("is_repeating_event"),
+							 notificationSent=data["notificationSent"]
 							 )
 				return result
 			except KeyError as e:
@@ -130,6 +136,7 @@ class Event:
 				"time":self.time.isoformat(),
 				"version":self.version,"isImportant":self.isImportant,
 				"completed":self.completed,
+				"notificationSent":self.notificationSent
 				}
 
 
@@ -155,6 +162,7 @@ def add_overrides_timetable(date:ddate,timetable_id:str,new:Event):
 	date_path = create_date_path(date)
 	local_timetable_path = path.join(dir_path,date_path, "overrides_timetables")
 	try:
+		make_date_directory(date)
 		mkdir(local_timetable_path)
 	except FileExistsError:
 		pass
@@ -192,21 +200,39 @@ setup_directory()
 def create_date_path(date:ddate):
 	return path.join(str(date.year),str(date.month),str(date.day))
 
-def delete(date:ddate,uuid:str):
+def delete(date:ddate,uuid:str,is_repeating=False):
+	if is_repeating:
+		delete_repeating(date,uuid)
+	else:
+		date_path = path.join(dir_path,create_date_path(date))
+		event_path = path.join(date_path,uuid)
+		remove(event_path)
+		if len(listdir(date_path)) == 0:
+			rmdir(date_path)
+			month_path = path.join(dir_path,str(date.year),str(date.month))
+			if len(listdir(month_path)) == 0:
+				rmdir(month_path)
+				year_path = path.join(dir_path,str(date.year))
+				if len(listdir(year_path)) == 0:
+					rmdir(year_path)
+
+
+def delete_repeating(date,uuid):
 	date_path = path.join(dir_path,create_date_path(date))
-	event_path = path.join(date_path,uuid)
-	remove(event_path)
-	if len(listdir(date_path)) == 0:
-		rmdir(date_path)
-		month_path = path.join(dir_path,str(date.year),str(date.month))
-		if len(listdir(month_path)) == 0:
-			rmdir(month_path)
-			year_path = path.join(dir_path,str(date.year))
-			if len(listdir(year_path)) == 0:
-				rmdir(year_path)
+
+	overrides = path.join(date_path,"override_timetable")
+
+	try:
+		mkdir(overrides)
+	except FileExistsError:
+		pass
+
+	with open(path.join(overrides,uuid),"w") as file:
+		file.write("null")
 
 
 def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
+	print("Load all called")
 	if not timetable:
 		load_dir_path = create_date_path(date)
 	else:
@@ -232,14 +258,19 @@ def load_all(date:ddate|int,timetable:bool=False) -> list[Event]:
 	return sorted(all_items,key=lambda x:x.time)
 
 
+def make_date_directory(date:ddate):
+	if not path.exists(p1 := path.join(dir_path, str(date.year))):
+		mkdir(p1)
+	if not path.exists(p2 := path.join(dir_path, p1, str(date.month))):
+		mkdir(p2)
+	if not path.exists(p3 := path.join(dir_path, p1, p2, str(date.day))):
+		mkdir(p3)
+	return p3
+
+
 def save_item(date:ddate,item:Event):
 	if not item.is_repeating_event:
-		if not path.exists(p1:=path.join(dir_path,str(date.year))):
-			mkdir(p1)
-		if not path.exists(p2:=path.join(dir_path,p1,str(date.month))):
-			mkdir(p2)
-		if not path.exists(p3:=path.join(dir_path,p1,p2,str(date.day))):
-			mkdir(p3)
+		p3 = make_date_directory(date)
 		with open(path.join(p3,item.id),"w") as file:
 			json.dump(item.save(),file)
 	else:

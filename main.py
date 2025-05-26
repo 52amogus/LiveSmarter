@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QApplication,QSystemTrayIcon
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon
 from PySide6.QtGui import QPixmap
 from ui.main_windows import MainWindow
-import model,platform
+import model, platform
 from threading import Thread, Event
+from multiprocessing import Process
 
 
 if __name__ == "__main__":
@@ -29,11 +30,11 @@ if __name__ == "__main__":
 
 
 
-	"""if platform.platform()[:5] == "macOS":
+	if platform.platform()[:5] == "macOS":
 		listener = Thread(target=model.notificationListener,args=[signal])
 
 
-		listener.start()"""
+		listener.start()
 
 	app.exec()
 

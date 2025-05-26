@@ -1,9 +1,31 @@
 from PySide6.QtWidgets import QFrame,QLabel,QAbstractItemView,QVBoxLayout,QHBoxLayout,QPushButton,QListWidget,QListWidgetItem
+from PySide6.QtCore import Qt
 from .day_preview import DayPreview
 from data import *
 from localization import word
 from datetime import date
 import model
+
+class EmptyDateRow(QFrame):
+	def __init__(self,items_date):
+		super().__init__()
+		layout = QHBoxLayout()
+		self.date = items_date
+
+		name = QLabel(QLabel(f"{word("weekdays")[self.date.weekday()]}, "
+						 f"{format_component(items_date.day)}.{format_component(items_date.month)}"))
+
+		layout.addWidget(name)
+		self.setStyleSheet(UNDEFINED_ROW_STYLE)
+		self.setLayout(layout)
+
+	def mouseReleaseEvent(self, event):
+		if event.button() == Qt.MouseButton.LeftButton:
+			self.show_preview()
+
+	def show_preview(self):
+		DayPreview(self.date, separate=True).show()
+
 
 class ActiveDateRow(QFrame):
 	def __init__(self, items_date:date):
@@ -32,30 +54,22 @@ class ActiveDateRow(QFrame):
 			widget.setStyleSheet(LIST_LAYER2_STYLE)
 			important_items_layout.addWidget(widget)
 
-		def show_preview():
-			DayPreview(self.date,separate=True).show()
-
-
-		self.btn_go = QPushButton("Перейти")
-		self.btn_go.setStyleSheet("""
-        padding:10;
-        border:2px solid white 10px;
-        """)
-		self.btn_go.setMaximumSize(120,50)
-		self.btn_go.clicked.connect(show_preview)
-
-		#layout.setSpacing(0)
 
 		tx_amount.setMaximumSize(40,40)
 		layout.addWidget(tx_date)
 		layout.addWidget(tx_amount)
-		layout.addWidget(self.btn_go)
 
 		main_layout.addLayout(layout)
 		main_layout.addLayout(important_items_layout)
 
 		self.setLayout(main_layout)
 
+	def mouseReleaseEvent(self, event):
+		if event.button() == Qt.MouseButton.LeftButton:
+			self.show_preview()
+
+	def show_preview(self):
+		DayPreview(self.date, separate=True).show()
 
 
 class ActiveDatesList(QListWidget):
