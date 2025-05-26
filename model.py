@@ -85,7 +85,7 @@ class Event:
 				 name:str,
 				 time:dtime,
 				 isImportant:bool,
-				 uuid:str = str(uuid1()),
+				 uuid:str = None,
 				 completed:bool=False,
 				 is_repeating_event:bool=None,
 				 notificationSent:bool=False
@@ -102,11 +102,17 @@ class Event:
 		self.isImportant = isImportant
 		self.completed = completed
 		self.version = CURRENT_FORMAT_VERSION
-		self.id = uuid
+		if uuid is None:
+			self.id = str(uuid1())
+		else:
+			self.id = uuid
 		self.notificationSent = notificationSent
 
 	def __hash__(self):
 		return self.id
+
+	def __str__(self):
+		return f"{"Repeating event" if self.is_repeating_event else "Event"} named: {self.name} time: {self.time}"
 
 	@classmethod
 	def decode(cls,data:dict[str,Any],uuid:str) -> Optional[Self]:
@@ -265,7 +271,9 @@ def make_date_directory(date:ddate):
 def save_item(date:ddate,item:Event):
 	if not item.is_repeating_event:
 		p3 = make_date_directory(date)
+		print(p3)
 		with open(path.join(p3,item.id),"w") as file:
+			print(item)
 			json.dump(item.save(),file)
 	else:
 		add_overrides_timetable(date,item.id,item)

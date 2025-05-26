@@ -61,6 +61,7 @@ class NewEventWindow(QWidget):
 		if text == "":
 			text = "Без названия"
 		item = Event(text, self.date_time_edit.time().toPython(),self.isImportant.isChecked())
+		print("TI",item.id)
 		if isTimetable:
 			save_to_timetable(weekday,item)
 		else:

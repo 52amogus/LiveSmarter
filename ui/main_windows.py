@@ -145,7 +145,7 @@ class CalendarWindow(QWidget):
 
 		self.setLayout(layout)
 
-	def update(self):
+	def update_content(self):
 		self.list_dates.reset_data([date(self.selected_year,self.selected_month,int(i)) for i in get_active_dates(self.selected_year,self.selected_month)])
 
 	def open_new(self):
@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
 			layout.itemAt(1).widget().setParent(None)
 			new_tab = TABS[tab]
 			try:
-				new_tab.update()
+				new_tab.update_content()
 			except AttributeError:
 				pass
 			layout.addWidget(new_tab)

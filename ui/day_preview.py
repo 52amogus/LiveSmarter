@@ -17,7 +17,7 @@ class DayPreview(QWidget):
 			default_month=day.month,
 			default_year=day.year
 		)
-
+		self.date = day
 		self.eventlist = EventList(load_all(day),day)
 
 		def show_new():
@@ -25,7 +25,8 @@ class DayPreview(QWidget):
 
 		def create_new():
 			item = new_window.create_new(day)
-			self.eventlist.add_item(item,day,False)
+			if item is not None:
+				self.eventlist.add_item(item,day,False)
 
 		new_window.btn_complete.clicked.connect(create_new)
 
@@ -51,4 +52,8 @@ class DayPreview(QWidget):
 
 	def set_light(self):
 		self.title.setStyleSheet()
+
+	def update_content(self):
+		self.eventlist.reset_data(load_all(self.date), self.date,False)
+
 	def set_dark(self):...
