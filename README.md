@@ -8,7 +8,15 @@
 
 Download and install Python from https://www.python.org/downloads/.
 
-Download the source code.
+clone the repository using git, run
+```
+git clone 
+```
+
+For open the project folder, run
+```
+cd <PROJECT FOLDER>
+```
 
 ### Packages required
 
