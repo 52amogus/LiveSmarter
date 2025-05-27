@@ -10,7 +10,7 @@ Download and install Python from https://www.python.org/downloads/.
 
 clone the repository using git, run
 ```
-git clone 
+git clone https://github.com/52amogus/Reminders/tree/main
 ```
 
 For open the project folder, run
