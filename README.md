@@ -9,6 +9,8 @@ This is a simple reminders app for both mac os and windows.
 It is written in pure python using pyside6.
 and it is still in development so, if you encounter issues, make sure to report them.
 
+<image src = "screenshot.png">
+
 ## ⬇️ Installation
 
 Download and install Python from https://www.python.org/downloads/.
