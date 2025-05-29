@@ -6,7 +6,7 @@
 
 ## Orreview
 This is a simple reminders app for both mac os and windows.
-It is written in pure python using pyside6.
+It is written in pure python using pyside6
 and it is still in development so, if you encounter issues, make sure to report them.
 
 <image src = "screenshot.png">
@@ -20,7 +20,7 @@ clone the repository using git, run
 git clone https://github.com/52amogus/Reminders/tree/main
 ```
 
-For open the project folder, run
+To open the project folder, run
 ```
 cd <PROJECT FOLDER>
 ```
