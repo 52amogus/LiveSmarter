@@ -31,7 +31,7 @@ To install everything, run
 ```
 pip install -r requirements.txt
 ```
-Or you can install the one by one from this list
+Or you can install the packages one by one from this list
 
 + PySide6
   ```
