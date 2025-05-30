@@ -4,17 +4,42 @@
 
 **Note: Notifications work on mac os only, winows support is coming soon**
 
+## Orreview
+This is a simple reminders app for both mac os and windows.
+It is written in pure python using pyside6
+and it is still in development so, if you encounter issues, make sure to report them.
+
+<image src = "screenshot.png">
+
 ## ⬇️ Installation
 
 Download and install Python from https://www.python.org/downloads/.
 
-Download the source code.
+clone the repository using git, run
+```
+git clone https://github.com/52amogus/Reminders/tree/main
+```
+
+To open the project folder, run
+```
+cd <PROJECT FOLDER>
+```
 
 ### Packages required
+
+To install everything, run
+```
+pip install -r requirements.txt
+```
+Or you can install the packages one by one from this list
 
 + PySide6
   ```
   pip install pyside6
+  ```
++ Or PySide6_Essentials (If you don`t have a lot of disk space left)
+  ```
+  pip install pyside6-essentials
   ```
 + macos-notifications(If you use mac os)
   ```
