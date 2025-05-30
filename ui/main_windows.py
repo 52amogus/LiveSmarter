@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QApplication,QMenu,QMenuBar,QMainWindow,QListWidge
 from PySide6.QtGui import QPixmap,QAction
 from PySide6.QtCore import QEvent,Qt,Signal
 import model
+from functools import partial
 from data import *
 from .new_event import NewEventWindow
 from model import get_active_dates, load_all, Event, save_item
@@ -18,42 +19,65 @@ def menu_button_size(widgets:list[QWidget]):
 	for element in widgets:
 		element.setFixedHeight(38)
 
+class SidebarTab(QPushButton):
+	def __init__(self,name,icon_path,set_tab_ref,tab_name,other):
+		super().__init__()
+		self.other = other
+
+		pm = QPixmap()
+		pm.load(icon_path)
+		self.setText("\t"+name)
+		self.setFixedHeight(38)
+		self.setIcon(pm)
+		self.clicked.connect(partial(self.setSelected,True))
+
+		self.set_tab_ref = set_tab_ref
+		self.tab_name = tab_name
+		self.setDeselected()
+
+	def setSelected(self,mod=True):
+		if mod:
+			self.set_tab_ref(self.tab_name)
+		self.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
+		for tab in self.other:
+			if tab is not self:
+				tab.setDeselected()
+
+	def setDeselected(self):
+		print(1)
+		self.setStyleSheet(SIDEBAR_BUTTON_STYLE)
+
 class Sidebar(QFrame):
 	@override
-	def __init__(self):
+	def __init__(self,set_tab_ref):
 		super().__init__()
+		print(id(set_tab_ref))
 		main_layout = QVBoxLayout()
-		layout = QVBoxLayout()
+		self.set_tab_ref = set_tab_ref
 
-		pm_today = QPixmap()
-		pm_today.load("icons/home.png")
 
-		pm_calendar = QPixmap()
-		pm_calendar.load("icons/calendar.png")
 
-		pm_timetables = QPixmap()
-		pm_timetables.load("icons/timetables.png")
-
-		self.btn_today = QPushButton(f" {word("today")}")
-		self.btn_today.setIcon(pm_today)
-
-		self.btn_calendar = QPushButton(f" {word("calendar")}")
-		self.btn_calendar.setIcon(pm_calendar)
-
-		self.btn_timetables = QPushButton(f" {word("timetables")}")
-		self.btn_timetables.setIcon(pm_timetables)
+		self.tabs = []
 
 		self.setFixedWidth(200)
 
-		self.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
-		self.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-		self.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-		menu_button_size([self.btn_today,self.btn_calendar])
-		layout.addWidget(self.btn_today)
-		layout.addWidget(self.btn_calendar)
-		layout.addWidget(self.btn_timetables)
-		main_layout.addLayout(layout)
 		self.setLayout(main_layout)
+		main_layout.setContentsMargins(10,190,10,190)
+
+		self.addTab(word("today"),"icons/home.png","today")
+		self.addTab(word("calendar"),"icons/calendar.png","calendar")
+		self.addTab(word("timetables"),"icons/calendar.png","timetables")
+		self.addTab(word("timetables"),"icons/calendar.png","timetables")
+
+
+
+
+
+	def addTab(self,name,icon_path,tab_name):
+		tab = SidebarTab(name,icon_path,self.set_tab_ref,tab_name,self.tabs)
+		tab.setDeselected()
+		self.tabs.append(tab)
+		self.layout().addWidget(tab)
 
 	def set_dark_mode(self):
 		self.setStyleSheet("""
@@ -247,11 +271,28 @@ class TimetablesWindow(QWidget):
 		layout.addLayout(buttons)
 		self.setLayout(layout)
 
+class ListsWindow(QWidget):
+	def __init__(self):
+		super().__init__()
+
+		layout = QVBoxLayout()
+		layout.addWidget(QLabel(""))
+
 class MainWindow(QMainWindow):
 	def __init__(self,initialTheme):
 		super().__init__()
 		layout = QHBoxLayout()
-		self.sidebar = Sidebar()
+		def set_tab(tab:str):
+			layout.itemAt(1).widget().setParent(None)
+			new_tab = TABS[tab]
+			try:
+				new_tab.update_content()
+			except AttributeError:
+				pass
+			layout.addWidget(new_tab)
+		print(id(set_tab))
+		self.sidebar = Sidebar(set_tab)
+		self.sidebar.tabs[0].setSelected(False)
 		layout.addWidget(self.sidebar)
 		today_window = DayPreview(ddate.today())
 		layout.addWidget(today_window)
@@ -281,14 +322,7 @@ class MainWindow(QMainWindow):
 
 
 
-		def set_tab(tab:str):
-			layout.itemAt(1).widget().setParent(None)
-			new_tab = TABS[tab]
-			try:
-				new_tab.update_content()
-			except AttributeError:
-				pass
-			layout.addWidget(new_tab)
+
 
 		def set_today():
 			set_tab("today")
@@ -310,9 +344,6 @@ class MainWindow(QMainWindow):
 			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
 			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 
-		self.sidebar.btn_today.clicked.connect(set_today)
-		self.sidebar.btn_calendar.clicked.connect(set_calendar)
-		self.sidebar.btn_timetables.clicked.connect(set_timetables)
 		self.settings_window = SettingsWindow()
 		self.about_window = AboutWindow()
 		widget.setLayout(layout)

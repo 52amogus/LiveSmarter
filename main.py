@@ -3,7 +3,6 @@ from PySide6.QtGui import QPixmap
 from ui.main_windows import MainWindow
 import model, platform
 from threading import Thread, Event
-from multiprocessing import Process
 
 
 if __name__ == "__main__":
