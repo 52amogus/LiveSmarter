@@ -276,7 +276,13 @@ class ListsWindow(QWidget):
 		super().__init__()
 
 		layout = QVBoxLayout()
-		layout.addWidget(QLabel(""))
+
+		title_layout = QHBoxLayout()
+
+		title = QLabel("Списки напоминаний")
+
+		title_layout.addWidget(title)
+
 
 class MainWindow(QMainWindow):
 	def __init__(self,initialTheme):
@@ -324,25 +330,7 @@ class MainWindow(QMainWindow):
 
 
 
-		def set_today():
-			set_tab("today")
-			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
-			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
 
-
-		def set_calendar():
-			set_tab("calendar")
-			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
-			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-
-
-		def set_timetables():
-			set_tab("timetables")
-			self.sidebar.btn_calendar.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			self.sidebar.btn_today.setStyleSheet(SIDEBAR_BUTTON_STYLE)
-			self.sidebar.btn_timetables.setStyleSheet(SIDEBAR_BUTTON_STYLE_SELECTED)
 
 		self.settings_window = SettingsWindow()
 		self.about_window = AboutWindow()
